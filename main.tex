@@ -1,0 +1,947 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{hyperref}
+\usepackage[dvipsnames,table]{xcolor}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage[T1]{fontenc}
+
+ \newcommand{\todo}[1]{
+	% Comment the following line to remove todos
+	\textcolor{red}{[\textbf{ToDo}: \emph{#1}]}
+}
+
+\usepackage[english]{babel}
+\addto\extrasenglish{
+    \def\chapterautorefname{Chapter}
+    \def\sectionautorefname{Section}
+    \def\subsectionautorefname{Section}
+    \def\subsubsectionautorefname{Section}
+    \def\algorithmautorefname{Algorithm}
+}
+\usepackage{csquotes}
+
+\usepackage{cleveref}
+
+\usepackage[
+  backend=biber,
+  style=authoryear-comp,
+  sortcites=true,
+  natbib=true,
+%  giveninits=true,
+  maxcitenames=2,
+  maxbibnames=99,
+  doi=false,
+  url=true,
+  isbn=false,
+  dashed=false,
+  sorting=ynt,
+  backref=true,
+]{biblatex}
+
+\definecolor{mygray}{gray}{0.9}
+\definecolor{myblue}{RGB}{100,143,255}
+\definecolor{mypink}{RGB}{220,38,127}
+\definecolor{mygreen}{RGB}{254,97,0}
+
+\addbibresource{references/strings.bib}
+\addbibresource{references/lib.bib}
+\addbibresource{references/local_references.bib}
+\addbibresource{references/proc.bib}
+
+%Comments
+\newcommand{\carola}[1]{\textcolor{red}{Carola: #1}}
+\newcommand{\alex}[1]{\textcolor{ForestGreen}{Alex: #1}}
+\newcommand{\tanja}[1]{\textcolor{blue}{Tanja: #1}}
+\newcommand{\matthias}[1]{\textcolor{purple}{Matthias: #1}}
+\newcommand{\lp}[1]{\textcolor{orange}{L. Purucker: #1}}
+\newcommand{\ls}[1]{\textcolor{CornflowerBlue}{L. Schä.: #1}}
+\newcommand{\lars}[1]{\textcolor{Fuchsia}{Lars: #1}}
+\newcommand{\pieter}[1]{\textcolor{NavyBlue}{Pieter: #1}}
+\newcommand{\kaitlin}[1]{\textcolor{BrickRed}{Kaitlin: #1}}
+\newcommand{\ab}[1]{\textcolor{magenta}{André: #1}}
+\newcommand{\damir}[1]{\textcolor{DarkOrchid}{Damir: #1}}
+\newcommand{\haniye}[1]{\textcolor{cyan}{Haniye: #1}}
+\newcommand{\niko}[1]{\textcolor{brown}{Niko: #1}}
+
+\title{Best Practices For Empirical Meta-Algorithmic Research\\ Guidelines from the COSEAL Research Network}
+\author{André Biedenkapp \and Lennart Schäpermeier \and Alexander Tornede \and Lars Kotthoff \and Pieter Leyman \and Theresa Eimer \and Matthias Feurer \and Katharina Eggensperger \and Kaitlin Maile \and Tanja Tornede \and Anna Kozak \and Ke Xue \and Marcel Wever \and Mitra Baratchi \and Damir Pulatov \and Heike Trautmann \and Haniye Kashgarani \and Marius Lindauer}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+    Empirical research on meta-algorithmics, such as algorithm selection, configuration, and scheduling, often relies on extensive and thus computationally expensive experiments.
+    With the large degree of freedom we have over our experimental setup and design comes a plethora of possible error sources that threaten the scalability and validity of our scientific insights.
+    Best practices for meta-algorithmic research exist, but they are scattered between different publications and fields, and continue to evolve separately from each other.
+    In this report, we collect best practices for empirical meta-algorithmic research across the subfields of the COSEAL community, encompassing the entire experimental cycle: from formulating research questions and selecting an experimental design, to executing experiments, and ultimately, analyzing and presenting results impartially.
+    It establishes the current state-of-the-art practices within meta-algorithmic research and serves as a guideline to both new researchers and practitioners in meta-algorithmic fields.
+\end{abstract}
+
+\section{Improving Experimental Design in \texorpdfstring{\\}{} Meta-Algorithmic Research}
+
+Empirical meta-algorithmic research allows for a large degree of control over the experimental setup due to the computational nature of our experiments. 
+However, this is a double-edged sword for research that is both meaningful and efficient: We encounter a plethora of decisions that \emph{must be made deliberately} every step of the way.
+This can lead to divergent research practices and results which in turn can diminish the amount of meaningful progress made in a field, as common standards for what constitutes reliable research results are important for long-term progress - compare \citet{aranha-swarm22,rajwar-air23} for the result of too much variation in a research field with too little systematic comparison.
+
+In addition, we increasingly need to consider the impact our research has on society and also other disciplines at large.
+Practices to ensure fairness and accountability in application~\citep{EUExpert19,Kaur22,TAILORRoadmap22}, are not yet well integrated into meta-algorithmic research.
+Therefore, designing experiments for reliable and reproducible results that are interpretable and whose impact in real-world applications can be measured is an ever-increasing challenge.
+
+We want to give guidance on how to achieve these goals based on the community-curated knowledge of large parts of the COSEAL\footnote{COSEAL (\textbf{CO}nfiguration and \textbf{SE}lection of \textbf{AL}gorithms) is an international research community on meta-algorithmic topics with more than a decade of experience on empirical research; see also \url{https://www.coseal.net/}.} network.
+This paper should not be seen as a strict rule book to follow to the letter, nor as a collection of field-specific best practices.
+Instead, we propose a framework for research from our collective experience that can be tailored to individual circumstances.
+
+
+\textbf{Our Goals} are to provide a written account of ``common knowledge'' principles and best practices from the COSEAL community to improve the experimental design in meta-algorithmic research. 
+Specifically, we focus on:
+\begin{enumerate}
+    \item Drawing empirically sound conclusions through carefully designed evaluation pipelines.
+    %\item Improving the computational efficiency of experimentation in meta-al\-go\-rith\-mic research and thus alleviating the burden on smaller academic labs as well as decreasing the ecological footprint.
+    \item Improving the efficiency of the research workflow to enable more and better scientific insights throughout the field
+    \item Increasing trust in research results through applicability, robustness, fairness, and accountability.
+\end{enumerate}
+
+
+\textbf{The Structure} of this paper mimics the typical research process in meta-algorithmics. 
+We begin by discussing best practices for \emph{designing research questions}.
+We move on to construct an empirical evaluation for these research questions through high-level \emph{experimental design}.
+Next, we investigate \emph{software}, as it is our primary tool: helpful code practices, working with benchmarks and dependencies, and other important considerations for research software.
+Lastly, we discuss \emph{interpreting results}, including visualization of results and statistical testing.
+All sections include examples of good research practices, as well as common pitfalls to avoid.
+
+\section{Formulating Research Questions}
+
+Before starting empirical work or experiment design, it is crucial to clarify the objectives of a research project. 
+This section makes general suggestions for doing this, specifically by discussing best research practices and formulating research goals.
+
+\textbf{TL;DR:} Be familiar with the literature on reproducibility and best experimental practices in your field. Decide at the start whether your research project will be confirmatory or exploratory. Just a reminder that any confirmatory research project usually needs a bit of exploration to make it both meaningful and interesting. Start with a clear research question or hypothesis.
+
+\subsection{Read Best Practice Literature}
+The first step of any research project should be to know the best practices in the field.
+Without this background knowledge, even finding interesting research questions can be challenging, let alone designing an experimental evaluation.
+Building on a field's established norms, on the other hand, can not only improve a project's outcomes, but also save a lot of research and review effort.
+
+Much research has studied best practices for empirical evaluations and experimental design in and around meta-algorithmics \citep[see, e.g.][]{mockus-bo89a,hooker-or94a,johnson-dimacs02a,mcgeoch-book12a,eggensperger-jair19a,lipton-acm19a}.
+Such best practices can contain a range of recommendations to be aware of: from high-level discussions of research directions (see the conversation around metaphor-based meta-heuristics by \cite{aranha-swarm22}) to general points about the validity of theoretical and empirical results~\citep{hooker-or94a,johnson-dimacs02a,herrmann-icml24} and practical questions of reproducibility and replicability~\citep{mitchell-fat19a,pineau-jmlr21a,bischl-wire23a}, see Table~\ref{tab:best_practices}.
+Many domains have their own set of best practices in addition to general recommendations for meta-algorithmic research - some like, e.g., algorithm configuration~\citep{eggensperger-jair19a}, with highly developed standards we can learn from.
+Therefore, we recommend reading up on how a specific community has formulated its best practices and where they might differ from others.
+This should form a strong basis for formulating interesting research questions that move the field forward and validating them empirically.
+
+We want to add a note on AI assistance at this point since it is relevant here but also for the rest of this paper.
+Many researchers from different disciplines use AI tools to help with different research tasks, like summarizing literature, improving writing or creating figures. 
+It is certainly worth exploring if AI tools can improve your personal workflows, but especially when it comes to literature research, you should always be able to verify, explain and reproduce the result from an AI tool. 
+This means reading the literature first before using AI summaries, thorough corrections of AI-assisted scientific writing and detailed scrutiny of other generated research artifacts like figures.
+Also, note the data protection issues associated with many AI services.
+When using AI tools, we recommend systems hosted by trusted institutions (many universities now offer such internal services) or systems that allow for some measure of control over data usage rights.
+
+\begin{table}[t!]
+    \centering
+    \begin{tabularx}{\linewidth}{p{0.2\textwidth} p{0.3\textwidth} X}
+        \toprule
+        \textbf{Subject Area} & \textbf{Best Practices (for)} & \textbf{Reference(s)} \\
+        \midrule
+        \multirow{3}{\linewidth}{Empirical Research} & \protect\leavevmode{\color{myblue}Designing Studies} & \cite{herrmann-icml24} \\
+        %\cline{2-3}
+        & \protect\leavevmode{\color{mygreen}Comparing Algorithms} & \cite{hooker-or94a,hooker-jh95a,johnson-dimacs02a,mcgeoch-book12a} \\
+        \midrule
+        \multirow{8}{\linewidth}{General ML} & \protect\leavevmode{\color{myblue}Reproducibility, Writing, Reporting}  & \cite{lipton-acm19a,mitchell-fat19a,pineau-jmlr21a,hofman-arxiv23a,kapoor-arxiv23} \\
+        & \protect\leavevmode{\color{mygreen}Comparing Models} & \cite{provost-icml98,demsar-06a} \\
+        & \protect\leavevmode{\color{mypink}Visualizing Results} & \cite{hehman-psychsci21,waskom-joss21} \\ % the seaborn library; could also be extended with some R tool; have not read hehman in detail
+        \midrule
+        \multirow{6}{\linewidth}{AutoML and Optimization} & \protect\leavevmode{\color{myblue}Research and Application} &  \cite{TBB20benchmarking,lindauer-jmlr20a,bischl-wire23a} \\
+        & \protect\leavevmode{\color{mygreen}Comparing Algorithms} & \cite{howe-jair02a,eggensperger-jair19a} \\
+        \bottomrule
+    \end{tabularx}    
+    \caption{A non-exhaustive list of literature on best practices in meta-algorithmics. We visually highlight recommendations on best practices in {\color{myblue}General}, for {\color{mypink}Visualization} and {\color{mygreen}Comparisons}.}
+    \label{tab:best_practices}
+\end{table}
+
+\subsection{Formulate Research Goals}
+Broadly speaking, there are two types of empirical research: confirmatory and ex\-plo\-ra\-to\-ry~\citep{schwab-sig20,herrmann-icml24}. 
+The goal of confirmatory research is to confirm or disprove an existing theory. 
+Exploratory research, on the other hand, aims to gain a basic understanding of an underexplored phenomenon or field where there is, of yet, not enough information to form a well-thought-out hypothesis.
+Although this distinction is not always explicitly made in all areas of meta-algorithmic study, e.g., machine learning~\citep{nakkiran-mleval22}, making this distinction early on will focus the research project and make it more likely that the outcome is useful within the community.
+
+\textbf{Exploratory Research} means working without a set hypothesis to test. Instead, it is about discovering new questions to answer in confirmatory research~\citep{dietterich-ml90}. However, this does not mean that there should not be clear targets for this kind of research. 
+Starting with a research goal that should be based on prior work is important. 
+Usually, this goal consists of studying and analyzing an effect or a phenomenon.
+The result should be novel insights and research questions that can be tackled in future work.
+By its very nature, there is no fixed set of steps to follow in exploratory research, but a community's best practices can guide the process by identifying gaps in understanding and highlighting how to produce meaningful outcomes.
+An exploratory work should aim to provide a precise definition of the setting in which it investigates, a discussion of why this setting is both novel and important to study, an investigation of how hard it is to solve, which factors contribute to its solution, and suggestions for future work~\citep{dietterich-ml90}.
+The more concrete and thorough the setting, investigation, and suggestions for future work, the more useful this research will be.
+Examples of exploratory meta-algorithmic research include works showing that algorithm configuration landscapes tend to be benign, e.g., \cite{pushak-acm22a} or \cite{schneider-ppsn22a}.
+
+\textbf{Confirmatory Research} should be hypothesis driven. 
+That is, one or more hypotheses should be the basis for a new research project.
+Such a hypothesis consists of two parts: a research question and a theory about the answer.
+It needs to be clear and falsifiable to serve as a basis for new research.
+A good research question, like a good theory, is founded on a thorough understanding of all aspects of previous work in the area. 
+In fact, many research questions originate as natural follow-up questions to other work. 
+Therefore, like in exploratory research, a prerequisite to formulating a good research hypothesis is an extensive base of knowledge of different work in the target area. 
+Once this knowledge base is established, there are four important points to keep in mind when forming research hypotheses:
+
+\begin{enumerate}
+    \item \textbf{Is the hypothesis grounded in disciplinary standards?} A well-formed hypothesis should build upon established theoretical frameworks and methodological approaches within the field. For interdisciplinary research, ensure the hypothesis respects the epistemological foundations and research standards of all contributing fields rather than violating core principles of any discipline.
+    \item \textbf{Is the hypothesis clear and simple?} The practices of all involved fields should be considered and consolidated. Both the research question and corresponding theory should be as short, precise, and simple as possible. Avoid connecting two different theories into one or making the hypothesis imprecise by using words such as ``maybe'', ``possibly'', and ``could''.
+    \item \textbf{Is the hypothesis testable?} Any hypothesis should be testable not only in theory but also in practice. Already consider the resources at your disposal in this step.
+    \item \textbf{Is the hypothesis falsifiable?} 
+    The hypothesis should be specific enough that it should be possible to definitively reject it. Avoid grandiose statements targeted at the ``research community at large'' or the distant future.
+\end{enumerate}
+Formulating concrete research questions upfront can take some time, but they can make experimental design much easier. 
+It is good practice to work on a single idea at a time. 
+A project's scope may grow over time, but often a single interesting hypothesis is exciting enough for publication and is also easier to communicate to others.
+
+\subsection{Examples \& Pitfalls}
+
+To illustrate our recommendations, we present an example for both exploratory and confirmatory research goals, as well as common pitfalls.
+
+\textbf{{\color{ForestGreen}Example:} Exploratory Research} We want to focus on investigating how well Bayesian optimization functions in a new real-world application. Specifically, we want to study which solution quality metrics are robust against outliers to avoid destructive results. 
+
+\textbf{{\color{ForestGreen}Example:} Confirmatory Research} Our leading research question is if early stopping of algorithm configuration using a regret criterion can increase efficiency in terms of trials without degrading performance. 
+Our hypothesis is that this approach will result in comparable incumbent performances to full runs on benchmarks where we have already seen early stopping perform well, but that there will still be performance drops on some domains.
+
+\textbf{{\color{OrangeRed}Pitfall:} No Planning} Not setting goals for a research project is not only inefficient, it can easily lead to improper research practices. Aimless work is more likely to ignore best practices and also more likely to (unwittingly) fall under the umbrella of \emph{method-developing exploratory research} described by \cite{herrmann-icml24}.
+
+\textbf{{\color{OrangeRed}Pitfall:} Blindly Relying on Best Practices} Especially when conducting novel exploratory research, established best practices can sometimes be limiting. 
+Deviations from these norms should always be well-informed and well-thought-out. Norms should be seen as guidelines and be followed in spirit rather than to the letter.
+
+\textbf{{\color{OrangeRed}Pitfall:} The ``Our Method Is Better'' Hypothesis} A very tempting easy research question and hypothesis to use in confirmatory research takes the form of ``Is our method better?'' - ``Our method outperforms all baselines''. 
+This is not a specific question and often not even a testable hypothesis.
+``Better'' and ``outperforms'' are very vague terms that can be interpreted in many different ways.
+If the goal of the research project is to demonstrate the superiority of a specific method, it should be specified where, how, and why the method works. 
+
+\section{Designing Experimental Evaluations}
+
+With the research questions identified, you can start designing the experimental studies set out to answer these questions.
+This chapter is structured by high-level design choices in the experimental pipeline: We start with how to select baseline approaches and the choice of benchmarks to run your experiments.
+This is followed up with recommendations on how to set up a fair comparison between different algorithms or learners, and recommendations for reproducible experiments.
+
+\textbf{TL;DR:}
+
+Always include a simple, well-known baseline approach in your experiments and motivate your benchmark choice by research questions and not the performance of your method. Always configure all approaches in your studies fairly, e.g., by allotting identical configuration budgets, and identify the contributions of each new component you introduce. Set up and report your experiments so that other researchers can effortlessly reproduce your results.
+
+\subsection{Establish Baselines}
+
+Careful calibration of the experimental scope is required to enable researchers to find rigorous and valuable insights.
+This initial phase requires thoughtful selection and configuration of various parts of the experimental pipeline, each serving a unique purpose in the overall investigation.
+As an important first step, incorporate \emph{relevant baselines}, i.e., simple established algorithms, and \emph{competitive alternatives} to facilitate qualitatively high, comparative analysis while avoiding data overload.
+Note that random baselines are often relevant and very simple to run. Therefore we recommend including a random baseline in most cases, e.g. random search.
+
+A relevant baseline aids in answering your research questions in detail and is not only there to provide a performance threshold that needs to be beaten.
+Further, a relevant baseline should receive the same treatment as the method being studied.
+If your own method is subject to extensive tuning, be it manual or automated, the baseline should ideally receive the same attention to enable comparisons on equal footing.
+For example, to quantify the benefit of your hyperparameter tuning algorithm in simple terms, it is suggested to compare your method against a random search with 2x, 4x, 10x, etc. resources~\citep{li-jmlr18a}.
+These methods simulate running random search in parallel, which would be the simplest way to assess whether we can improve over simply running random search on more cores (i.e., the most straightforward ``faster'' optimization algorithm).
+
+\subsection{Select Benchmarks}\label{sec:benchmarks}
+
+One key component of the experimental design is the selection of benchmark problems, i.e., test problems and data sets, on which a new system is being evaluated.
+The choice of benchmark problem must not be motivated by the desire to show that a novel idea is better than previous ones, but should focus on \emph{generating (positive or negative) evidence for the claims in your project} and to improve understanding of your problem(s) and method(s).
+That includes a complete description of the benchmark problems, potential biases, and thorough results reporting (cf.\ below).
+
+An overview of benchmarking guidelines in optimization is provided by \citet{TBB20benchmarking}.
+Additionally, early work on the empirical analysis of algorithms can provide guidance on biases that are easily overlooked, e.g., \citet{hooker-jh95a,johnson-dimacs02a}.
+In the following, we focus on some practical aspects: the extent and order in which experiments should be run, existing benchmark libraries, and surrogate benchmarking.
+
+\textbf{Decide on the Number of Benchmarks}
+Before choosing one or more specific benchmark problems, we have to decide how many benchmarks to run in the first place.
+Running more benchmark problems will, given the results are thoroughly analyzed, allow us to make more substantiated claims about the performance of a system under varying conditions.
+However, benchmarking as much as possible for its own sake does not lead to improved understanding of the system to be evaluated.
+Instead, it is key to select benchmark problems in such a way as to produce a complete picture of within the experimental evaluation, including the strengths and weaknesses of a method.
+Furthermore, in some settings such as Hyperparameter optimization (HPO) and AutoML, experiments can be significantly computationally -- and thus economically and ecologically -- expensive.
+
+Benchmark problems should have the \emph{right difficulty} to enable relevant performance analyses, i.e., selected benchmark suites should overall not be too easy or unreasonably hard.
+Including some easy and some very difficult problem instances can aid in analyzing performance on these problem classes; however, when only such instances are included in the experimental results, they may be irrelevant or inconclusive at best.
+A mix of difficulties is the best approach.
+We can also use the problem difficulty to facilitate more efficient benchmarking.
+Ordering benchmark problems from easy to hard to solve can help identify bugs earlier and test whether the overall system works before committing significant computational resources to solve more complex problems.
+Thus, in case such an ordering of benchmarks is possible, consider using easier benchmarks in a small prototype experiment to refine your design decisions.
+
+Additionally, the number of benchmarks as well as repetitions should be guided by the performance analysis protocol.
+Ideally, they allow for robust analysis with respect to statistical tests (cf.~\Cref{sec:post-hoc}).
+Note that while the number of repetitions is likely always relevant for post-hoc analysis like statistical testing, the research question may put similar importance on the number of benchmarks, e.g., if the research is on the generalizability of a method. 
+
+\textbf{Re-use Existing Benchmark Libraries}
+For many problem domains, re\-search\-ers have created standardized collections of benchmark problems, for example, ASlib \citep{bischl-aij16a}, BBOB functions \citep{COCOjournal}, HPOBench \citep{eggensperger-neuripsdbt21a}, HPO-B \citep{arango-arxiv21a}, OpenML Benchmarking Suites \citep{bischl-neurips21a}, DACBench \citep{eimer-ijcai21a}) and tools to execute large-scale experiments (e.g., Nevergrad \citep{Nevergrad}, BayesMark \citep{bayesmark}, AutoML benchmark \citep{gijsbers-jmlr24a}, COCO \citep{COCOjournal}, Synetune \citep{salinas2022syne}, IOHprofiler \citep{IOHprofiler} and CARPS \citep{benjamins-arxiv25a}).
+Therefore, we can stand on the shoulders of giants, reducing the chances of making implementation mistakes.
+Using an established benchmark suite has a multitude of advantages. It relieves the users from selecting test problems and evaluation protocols, including the performance measure(s), number of repetitions, length of runs, etc.
+It also allows us to easily compare results between different research groups that evaluated their approach on the same benchmark.
+
+We should take care to select the most \emph{recent version} of a benchmark and document which version we use.
+Benchmark suites may be extended over time to include more varieties of problem instances, fix errors in earlier versions, or, in the case of surrogate benchmarks, be more correct and more representative of the real problem.
+
+If current benchmarks are not enough, consider extending and contributing to an existing benchmark instead of introducing a completely new one.
+When proposing new test problems, formulate the challenges associated with each of them as explicitly as possible.
+For example, the BBOB suite organizes its test problems into groups with shared characteristics and associates research questions with each individual problem \citep{COCOjournal}.
+
+\textbf{Use Surrogate Benchmarks}
+In many situations, running the ``real'' experiments is the factor that contributes the most to the computation time and thus cost.
+For example, when evaluating HPO or AutoML systems, training and evaluating a given configuration of your ML pipeline is often the most expensive part \citep[see e.g.,][]{eggensperger-aaai15a,lindauer-jmlr20a}, especially when combined with thorough resampling.
+
+When confronted with a low-dimensional discrete problem space where it is feasible to enumerate the search space, \textit{tabular} benchmarks can be a great starting point.
+Here, all possible configurations are evaluated by the benchmark designers beforehand, and the performance data are published to substitute the evaluation pipeline, e.g., training a neural network.
+Tabular benchmarks are particularly common in small-scale neural architecture search (NAS) \citep{ying2019bench,mehta-iclr22a}, but are naturally limited in the expressiveness of their search space due to the curse of dimensionality.
+
+In contrast, surrogate benchmarks replace the evaluation of the ``real'' problem by a surrogate function, which approximates the true problem using a simplified model, e.g., learned by regression.
+Thus, they can be viewed as an intermediate step between fully artificial benchmarks (such as BBOB) and real experiments, e.g., of an AutoML system.
+
+A surrogate function can typically be evaluated in fractions of a second on a CPU, rather than multiple hours on a cluster, which has several key benefits.
+First of all, the environmental impact of any given experiment is greatly reduced.
+The increased experimental speed also allows for faster iterations and testing of more parameter configurations, experimental setups, etc., which is particularly important in the early development of a new system.
+
+The dependencies of surrogate benchmarks are often simpler than those of the real experimental pipeline, as they abstract a lot from the original problem, which in turn reduces the complexity in the implementation significantly.
+This improves the transferability of results between different hardware setups, and thus contributes to better reproducibility of experimental data.
+The simplified dependencies also remove one source of bugs and errors, especially when running the experiments on HPC clusters, reducing the number of erroneous experimental runs.
+
+Finally, surrogate benchmarks have a democratizing effect.
+Not everyone has the enormous HPC resources that are sometimes required, e.g., for running experiments on HPO or AutoML.
+The significantly lower compute requirements of surrogate benchmarks enable researchers without access to such resources to perform experiments that were otherwise infeasible for them.
+
+Examples of surrogate benchmarks are YAHPO Gym \citep{pfisterer2022yahpo} for general HPO tasks, as well as some of the scenarios in NAS-Bench-Suite by \citet{mehta-iclr22a} for NAS.
+
+However, we should be careful of drawing very general conclusions from results on surrogate benchmarks.
+There are possible inconsistencies with the real task, where the surrogates might exhibit characteristics different from the true system/model. For example, \cite{eggensperger-mlj18a} showed that only by combining performance data from several algorithm configurators for building the surrogate benchmark, they were able to reproduce similar rankings on the surrogate benchmark as on the real one. In some cases, it might be reasonable in case of doubt to also run real benchmarks at the end of an experiment series to verify key results.
+
+\textbf{Use Synthetic Benchmarks} 
+In addition to surrogate benchmarks, some fields of research also offer synthetic benchmarks, i.e., synthetically generated problems or datasets with purposefully created and well-understood challenges.
+The main advantage of synthetic benchmarks is that they allow to study specific aspects of a given algorithm or meta-algorithmic framework depending on problem/dataset instance properties: For example, how does an optimizer perform with increasing search space dimensionality (under otherwise unchanged circumstances)?
+In addition, they offer potentially even lower computational requirements than surrogate benchmarks.
+
+Synthetic benchmarks are popular in many heuristic optimization domains, e.g., traveling salesperson problems \citep{bossek2019evolving}, combinatorial optimization \citep{Liefooghe2023mocobench}, or (unconstrained) continuous optimization (e.g., BBOB \citep{COCOjournal}).
+Furthermore, first synthetic benchmarks for algorithm configuration are available, e.g., SynthACticBench \citep{margraf2025synthacticbench}.
+
+\textbf{Choose the Right Type of Performance Metric} 
+The performance of an algorithm on one instance or dataset can be characterized using different (kinds of) performance metrics, cf.\ Chapter 5 of \cite{TBB20benchmarking}.
+A performance metric can measure the quality, time, or robustness of a solution of an algorithm. 
+While some benchmarks will specify how to measure performance, generally there are multiple options to choose from.
+
+\emph{Solution quality metrics} relate to the quality of the solution(s) found during the execution of the algorithm.
+Examples are the balanced accuracy of a classifier, the solution quality of an optimizer after a fixed budget, or other performance indicators, such as the achieved hypervolume of non-dominated solutions in multi-objective optimization, after termination of the algorithm in question.
+Often, solution quality metrics are the easiest to measure, as they do not require much additional information like reference or optimal solutions and can be quickly evaluated.
+However, they are also the most sensitive to the experimental setup, e.g., maximal algorithm runtimes / budgets, and cannot always be compared easily across datasets.
+
+\emph{Time-related metrics}, in contrast, measure the time required for an algorithm to reach a specific solution quality. These include, e.g., the expected running time (ERT) prevalent in BBOB and the penalized average running time (PAR)-family of metrics popular in combinatorial optimization scenarios.
+
+\emph{Anytime metrics} combine aspects of both solution quality and time-related metrics by tracking how solution quality improves over time during algorithm execution. These metrics are particularly valuable when users have varying time budgets or when the available computation time is unknown in advance. By visualizing or quantifying the quality-time trade-off (e.g., through performance profiles or area under the curve measures), anytime metrics provide a more comprehensive view of algorithm behavior across different time horizons. 
+
+Finally, a \emph{robustness metric} is concerned with the variance in the outcome of multiple runs.
+
+\subsection{Make Design Decisions}
+
+When evaluating a new algorithm, many design decisions regarding the algorithm's (hyper-)parameters, inclusion of different components, etc., have to be made.
+Here, we focus on setting the (hyper-)parameters fairly, especially considering comparison and baseline approaches.
+
+\textbf{Optimize Hyperparameters} 
+With the maturity of fields such as algorithm configuration and hyperparameter optimization (HPO), there is a plethora of methods that we can choose from to automatically find well-performing design decisions.
+Even though it can be a costly process, this is preferable to manual configuration as hyperparameters can have a significant influence on the empirical results.
+
+First we need to consider which HPO setting is appropriate for our research question. Using the Algorithm Configuration framework~\citep{schede-jair22} to tune our proposed method across a set of tasks to then test the generalizability of this hyperparameter configuration on a left-out task will give us different information about the method's performance than tuning for each task individually. 
+
+Then we need to select an HPO method.
+Classical black-box approaches \citep[see e.g.,][]{lopezibanez-orp16a,ansotegui-sat21a,lindauer-jmlr22a} only consider the input-output relationship of the optimization procedure and thus only enable static tuning.
+Gray-box methods \citep[see, e.g.,][]{li-jmlr18a,klein-aistats17a,awad-ijcai21a} on the other hand look at multiple such relationships (e.g. input$\mapsto$\{output$_{t=1}$,...,output$_{t=T}$\} relationship at different, discrete times of the target algorithm) to speed up the optimization procedure.
+Lastly, white-box approaches \citep[see, e.g,][]{adriaensen-jair22a} aim to facilitate any-time configuration by continuously monitoring the behavior of the target algorithm.
+
+The choice of which method to employ is highly dependent on the target scenario.
+For example, if it is well known that the target algorithm's performance can be approximated well on a subset of the overall available budget, then gray-box methods will be the right choice.
+If it is known that the configuration space requires dynamic tuning, white-box approaches should be used.
+These examples, however, require domain knowledge, while black-box approaches are reliable choices for tuning if we can not make ready use of such prior information.
+
+\textbf{Do HPO Fairly} Usually, selecting the right HPO method for the setting is not enough. 
+HPO has its own design decisions that need to be made. 
+For one, the search space itself needs to be defined.
+It is important that it contains existing default values and is broad enough to capture the optimal hyperparameters \citep{anastacio2019exploitation}. 
+This is a difficult task without existing domain knowledge, but fortunately, good search spaces can sometimes be determined by referencing established publications (including code bases).
+Still, in other scenarios, it can be a challenging endeavor, especially when defaults are determined dynamically based on the input data \citep[see, e.g.,][]{pfisterer2021learning}.
+
+In addition to the search space, we need to select an optimization budget and, depending on the HPO method chosen, additional HPO parameters.
+For machine learning, it is also important to choose robust resampling strategies because naive strategies such as the holdout can lead reduced generalization error or overtuning \citep{tschalzev-fmldpr25a,schneider-automl25a}.
+Again, these decisions often are not straightforward but can be made by referencing prior work if reasonable.
+
+A crucial factor for a fair evaluation is to standardize all of these decisions across all evaluated methods, including baselines.
+Variations for different settings should be well-motivated.
+Our goal should be to achieve the best possible performance for every method we execute.
+To ensure others can reproduce this part of our experimental pipeline, the HPO process should be documented in detail.
+
+\textbf{Perform Ablation Studies} The quality of experimentation and the insights gained can be further improved by including ablation experiments that probe the impact of each individual component of a proposed approach, and studying their interaction effects.
+As such, ablation studies lend themselves to defining many relevant baselines as they can highlight the impact of individual design choices.
+Additionally, ablation studies can be viewed as a crude but informative variant of a configuration study, as ablating individual components can be seen as akin to a grid search over binary hyperparameters that enable/disable parts of the method under study.
+Finally, to uncover every aspect of an algorithm's performance, you need to consider possible optimizations concerning feature selection or preprocessing, as well as other design alternatives.
+
+\textbf{Document Design Decisions} All design decisions should be clearly documented and easy to find. 
+This will enable others to reproduce and build upon your current experiments. 
+We recommend integrating them into your reporting, either in the paper or alternatively in the supplementary material.
+Such transparency on the exact design decisions used is instrumental to focused community progress on the topic at hand and should always be a priority.
+
+\textbf{Be Aware Of GenAI Experimentation} Generative models are an increasingly important part of our experimental pipeline. 
+Evaluating their predictions, however, can be quite involved compared to many other model classes, since generation temperature and the starting prompt play a significant role.
+These are serious and important factors to consider when working with generative models.
+Prompts are hard to automatically optimize like we would hyperparameters (though attempts have been made to do so~\citep{}) yet still deserve a comparable scrutiny. 
+It is essential to be familiar with up-to-date best practices and current work in the area of your choice. 
+Your strategy around model prompting and evaluation should be documented as well as the rest of your design decisions. 
+
+\subsection{Design Reproducible Experiments}
+
+A study can be reproducible on several levels as \cite{bouthillier-icml19a} describe: its code can yield the same outcome everything (Methods Reproducibility), a new implementation of the same method can yield comparable results (Results Reproducibility) and different experimental setups can lead to the same findings (Inferential Reproducibility).
+All three of them are important in experimental design since they validate the implementation, the experimental setting and the conclusions. 
+
+Ideally, a clear research goal in combination with careful selection of baselines and benchmarks as described above will already set a good basis for Inferential Reproducibility. The following paragraphs add elements that are important for Methods Reproducibility and Results Reproducibility. Methods Reproducibility specifically can be easily tested by re-running a simple toy problem multiple times and we recommend doing so for the best possible experimental basis.
+
+\ls{This could also be relevant: \citep{lopez2021reproducibility}}
+
+\textbf{Measure Everything}
+The comprehensive measurement of all variables is a fundamental pillar of empirical research.
+It ensures reproducibility and transparency of the experiments.
+Further, experiments are often expensive, so it is crucial to track everything of interest to avoid rerunning experiments just to track new variables.
+Thus, when we refer to \emph{everything}, we refer to a broad spectrum of factors.
+In the study of meta-algorithmics, metrics of interest are often not limited to solution quality, but also include runtimes, be it wallclock or used CPU/GPU time.
+Generally speaking, it is important to track the chosen and considered solution candidates, CPU/GPU hours, and other compute resources, such as memory.
+
+Taking AutoML as an example, we have various measurements that come into play. For example, all types of machine learning metrics should be captured, such as those computed by scikit-learn \citep{scikit-learn}.
+The final pipelines should be serialized to allow post-experimental evaluation of possible additional metrics of interest. Having easy access to such a pipeline can be very helpful, since, for example, a reviewer might ask for a metric they are interested in during a rebuttal.
+If storage space permits, predictions on validation and test data, along with the corresponding true labels, should be saved. This enables post-hoc computation of most metrics after the data have already been collected. For classification tasks, the confusion matrix, which provides a comprehensive summary of the algorithm's performance, should also be stored.
+
+An added bonus of measuring everything is that many research artifacts get generated that might be of interest to collaborators or other researchers.
+Diligent tracking of interesting data can help lab members avoid having to run expensive data collection themselves.
+Thus, it is best to make all the data easily available so that others can use it, optimizing the overall resource utilization.
+
+When advising to measure everything, we have to add a note of caution.
+Additional logging can potentially require additional computational resources, which might make fair algorithm comparisons prohibitive.
+Thus, runtimes or similar metrics of base algorithms should be logged separately from any other metric being tracked for other analyses.
+In such cases, we recommend re-using ideas and concepts like the \texttt{runsolver} \citep{runsolver} or the \texttt{GenericWrapper4AC} \citep{eggensperger-jair19a} that log (and even limit) the used compute resources so that they can be easily tracked.
+Job scheduling systems such as SLURM and PBS, frequently employed in high-performance computing (HPC) environments, can also yield valuable data on the resource usage of each execution instance and should be considered when reporting results.
+By diligently measuring everything, we ensure that our empirical research in meta-algorithmics is both thorough and replicable and avoid unnecessary waste of resources.
+
+\textbf{Use Standardized Data Formats}
+The integration of standardized data formats and the consistent annotation of data builds upon the fundamental concept of ``measuring everything''.
+Adhering to standardized data formats aids in facilitating comparisons, interpreting results, enabling effective visualizations, and circumvents the necessity of rerunning experiments.
+For this reason, many communities agree on and use standardized data formats that make it easy to exchange, access, and read research artifacts.
+Such information is often noted down in best practice literature which you should be familiar with.
+Standardized formats, in addition to making data collection easier, also help in deciding which data to track. This extends beyond the recording of final results but encourages comprehensive measurement at all experimental stages.
+As an example, using standardized data formats enables integrating results in annotated data collections (see the OPTION ontology by \cite{OPTIONtevc} for black-box optimization) or data repositories such as the BBOB data archive at \url{https://coco-platform.org/testsuites/bbob/data-archive.html} or OpenML's~\citep{bischl-patterns25a} collection of datasets, benchmarks, and runs at \url{https://www.openml.org/}.
+
+\textbf{Build End-to-End Experimental Pipelines}
+Creating comprehensive, automated pipelines serves as the backbone of efficient and scalable empirical research. These pipelines should integrate all aspects of the experimental process—from algorithm execution to analysis and reporting—into a cohesive system of interconnected building blocks. 
+
+Your pipeline should reuse logic across different experimental scenarios, such as your primary algorithm, ablation studies, or baselines, ensuring consistency in how experiments are conducted. Each component—data preparation, algorithm execution, logging, result collection, statistical analysis, and visualization—should be modular yet interconnected, allowing experiments to run from start to finish with minimal manual intervention.
+
+Modern tools \citep[see e.g.,][]{biedenkapp-lion18a,tsirigotis-icml18a,sass-realml22a,zoller2023xautoml,fostiropoulos-automlabcd23a,COCOjournal} facilitate this approach by enabling automatic generation of comprehensive reports, including \LaTeX{}-tables of results, statistical test outputs (cf.~\Cref{sec:post-hoc}), and visualizations (cf.~\Cref{sec:plotting}).
+
+This end-to-end pipeline approach offers three key advantages: First, it dramatically reduces human-induced variation and errors that occur during manual handling of intermediate steps. Second, it enhances reproducibility by encoding the entire experimental protocol in software. Third, it creates long-term efficiency gains, as these pipelines can be adapted and reused for future projects. The initial investment in building such pipelines pays dividends through more reliable results and significant time savings over multiple research cycles.
+
+
+\textbf{Minimize Sources of Noise and Ensure Statistical Robustness}
+Minimizing sources of noise and ensuring statistical robustness are two highly intertwined aspects of empirical research.
+Together, they are important aspects of trustworthy AI.
+The goal is to design experiments such that they maximize the robustness of the generated results, which inherently involves accounting for sources of noise.
+Unfortunately, there is no unified framework and notation for defining robustness, especially relating to experimental AI pipelines including optimization, machine learning, and statistical principles.
+Still, all state-of-the art concepts have their roots in robust statistics \citep[see e.g.,][]{maronna_robust_2019} founded in the 1960s.
+These principles, including robustness against the underlying data distribution, outliers, missing data, and generalization capabilities, should form the fundamental considerations of experimental setups.
+
+Minimizing noise in experiments requires the use of consistent environments for compiling algorithms, which include the same hardware, compiler version, and libraries. In the context of high-performance computing (HPC), ensuring that all runs are conducted on the same partition is crucial. The adoption of containerization wherever possible further aids in the reduction of noise.
+
+Repeated runs are an essential practice in empirical research as they enhance the reliability and generalizability of the findings.
+By conducting multiple trials, researchers can account for variations, potential outliers, and unexpected results that could occur due to noise or randomness in the experimental setup. 
+This repetition helps in understanding the range and consistency of results and reduces the influence of uncontrollable factors like hardware noise, operating system noise, software noise, HPC workload noise, and parallelism noise.
+Therefore, repeated runs serve as a guard against incidental results, strengthening the overall validity and reliability of the research findings.
+However, we also need to take into account how many repeated runs are necessary.
+This choice can vary from benchmark to benchmark and should not be done independently of the choice of benchmark.
+As benchmarks themselves are such a crucial part of empirical studies, we further discuss this experimental design decision in ~\Cref{sec:benchmarks}.
+
+
+\subsection{Examples \& Pitfalls}
+
+\textbf{{\color{ForestGreen} Example:} Simple Baseline Investigation} We want to understand if our novel early stopping mechanism for algorithm configuration actually improves performance compared to standard approaches. To investigate this, we will run the same algorithm configurator with and without early stopping on a set of established benchmarks, measuring both final performance and resource consumption.
+
+\textbf{{\color{ForestGreen} Example:} Comprehensive Benchmarking Strategy} We aim to thoroughly evaluate our new hyperparameter optimization algorithm against established methods. Our investigation will use both surrogate benchmarks (for rapid, broad testing across many scenarios) and selected real-world problems (to validate surrogate findings). We hypothesize that while our method will show advantages on surrogate benchmarks, some unique characteristics of real-world problems may reveal important limitations.
+
+\textbf{{\color{OrangeRed} Pitfall:} Blindly Relying on Surrogates} As surrogates offer a low-cost alternative to real-world algorithm runs it is tempting to use them for a large variety of evaluations. However, surrogates can fail to capture all details of a real-world scenario. It could thus very well happen that a shortcoming of a new method is overlooked as surrogates abstract away the root cause of such a shortcoming.
+
+\textbf{{\color{OrangeRed} Pitfall:} Asymmetric Evaluation} We are investigating a novel hyperparameter optimization method and spend 80\% of our computational budget fine-tuning its components. While this yields strong results in our evaluation, we allocate only minimal resources to baseline methods. This prevents meaningful comparison and risks overstating our method's capabilities, as the baselines weren't given equal opportunity for optimization.
+
+\textbf{{\color{OrangeRed} Pitfall:} Insufficient Metrics Collection} We run extensive experiments comparing our novel scheduling algorithm against state-of-the-art methods, collecting only the final performance scores. Some time later, we discover that memory usage patterns are crucial for understanding the algorithm's behavior. Without stored measurements, we must rerun all experiments - consuming another 2000 CPU hours that could have been avoided by comprehensive metric logging during the initial runs.
+
+\textbf{{\color{OrangeRed} Pitfall:} Untested Experimental Setup} We develop a new algorithm configuration method and share our benchmarking framework. When another research group tries to validate our results, they discover missing configuration files and conflicting library dependencies. Our reported performance gains prove unreplicable due to undocumented preprocessing steps. A simple verification run by a co-author would have caught these issues before publication, saving weeks of debugging effort across the community.
+
+
+\section{Writing Research Software}
+
+Good software is the key to following through on the experimental design of the last section. In the following, we discuss all the elements that need to be considered when implementing algorithms and performing experiments. In addition, we highlight reproducibility aspects that are particularly important for research software and finally discuss how to best utilize resources for experimentation.
+
+\textbf{TL;DR:} 
+Open-source all research artifacts for reproducibility, including code, data, and configurations. Design research code with proper dependency management, quality assurance, and thorough documentation. Start with small prototype experiments, estimate resource requirements, and optimize for efficiency. When using clusters, be mindful of resource allocation, implement checkpointing, and monitor experiments closely.
+
+\subsection{Open-Source Research}
+%What to open source, how to package, including instructions for running stuff, licensing, future plans (e.g., PR to a package, maintaining, etc.)
+The most important software factor for good experimental practice is making the software accessible in the first place.
+This means open-sourcing all software components according to community standards, but it may also make sense to consider standalone publications for software that is used in research.
+
+\textbf{Make All Artifacts Available}
+In order to facilitate open science and research, it is crucial to identify all the artifacts necessary to test and ensure the repeatability and reproducibility of your experiments.
+To this end, it is important to make the data, code, as well as all other relevant research artifacts available.
+% Details about (hyper-)parameter configurations, how to access data that was not generated by yourself and is used computationally, are crucial for reproducibility.
+Details about (hyper-)parameter configurations and how to access external data you used in your experiments are crucial for reproducibility.
+Any design decision likely has an impact on the final experiments and should therefore be adequately documented.
+This documentation itself should also be made available.
+Familiarity with the target domain's best practices will prove useful in identifying relevant research artifacts.
+
+\textbf{Follow Community Standards}
+Recently, many communities have started to provide reproducibility checklists.
+For example, \citet{pineau-jmlr21a} proposed a reproducibility checklist for machine learning research which can assist as a rough guide when deciding what should be made available and also serves as a reminder to avoid overlooking crucial details.
+Beyond such reproducibility checklists, the respective communities have additional recommended standards for reporting and sharing research artifacts. 
+For example, in the machine learning community, the so-called model cards \citep[see, e.g., ][]{mitchell-fat19a,crisan-facct22a} are used to enhance transparency by providing detailed, and, importantly, standardized documentation that helps users understand the capabilities, limitations, and appropriate use of machine learning models.
+Once all required artifacts have been identified, they should be made available through appropriate platforms that ensure long-term accessibility.
+For example, Zenodo\footnote{https://zenodo.org/ is projected to be maintained for the lifetime of the host laboratory CERN, \href{https://help.zenodo.org/guides/nih/element4/}{defined as at least the next twenty years}.} is an open-access repository developed by CERN under the European OpenAIRE program, which allows researchers to share and preserve their research output, including publications, datasets, and software.
+Other options include platforms like OpenML~\citep{bischl-patterns25a}, GitHub, and HuggingFace.
+
+\textbf{Consider Publishing Software}
+Software publications serve as vital channels for knowledge dissemination, introducing the wider communities to cutting-edge algorithms, techniques, and tools. The peer review process inherent in most venues helps validate and refine the presented work, ensuring its quality and reliability. These publications also act as formal documentation, creating a lasting record of software developments and methodologies. By providing detailed information, they enable other researchers to reproduce and extend the work, fostering cumulative progress in the field. Moreover, software publications often address specific challenges, offering solutions that can be applied to similar problems across various domains, thus accelerating problem-solving in the broader software ecosystem.
+The JMLR Machine Learning Open Source Software (MLOSS) track, the Journal of Open Source Software (JOSS) and the Journal of Statistical Software (JSS), for example, publish short papers on software, and the Evolutionary Computation Journal accepts shorter software articles as well\footnote{\url{https://direct.mit.edu/evco/pages/submission-guidelines\#software}}. This makes your software a first-class citizen that people can explicitly give you credit for through citations, and hopefully provides incentives for continued development. 
+%Preparing code, documentation, etc. and making it available is great, but if it is not maintained and updated, it quickly becomes less useful.
+
+
+\subsection{Design Research Code}
+%Being aware of requirements from baselines and benchmarks, considering containers, code quality, documentation, testing
+Research code historically has a reputation for being poorly designed and thus difficult to build upon. 
+While the expectation should likely not be at a level of production-ready solutions, there are principles that can improve the legibility, structure, and longevity of research code.
+
+\textbf{Invest in Dependency Management}
+Good research code enables others to independently reproduce or replicate your results.
+Reproducing results, in turn, requires installing and running the corresponding code.
+This can be nontrivial as different platforms or operating system versions can change the availability of packages or how they can be installed.
+Therefore, the target audience for the code should be considered: easy installation carries more weight for a benchmark than for an algorithmic improvement paper.
+Scripting languages offer environment specifications, such as, e.g., Python's UV~\citep{uv}.
+However, these are not infallible and can cause problems across different platforms.
+Containers are a reliable alternative to ensure smooth installation.
+They are built from recipes that specify many more details, such as the exact operating system on which to build or install the code, and thus ensure that the code is always executed in exactly ``the same environment''.
+The most popular options are Docker~\citep{merkel-linux14a} and Singularity~\citep{kurtzer-plos17a}. 
+Setting them up requires extra effort, and even container recipes age, but especially when the same functionality is required across platforms, containers are the recommended way of sharing software.
+
+\paragraph{Account for Failure}
+It is not unusual for experiments to fail to complete. What is important is to be able to quickly gain insight into why this happens and where the issue lies. 
+Therefore, code should contain mechanisms that make it easy to distinguish different types of errors, e.g. between a job failing to launch or the code execution failing, and where they occur. 
+Print statements that trigger at important points in the pipeline can be helpful for this (e.g. printing whenever a new function evaluation is scheduled) and can also be used to record important debug information like arguments for a new job. 
+Assertions in the code can fulfill similar functions and prevent errors from propagating (e.g. asserting that the last evaluation result is actually a number). Keeping these records for all runs can serve as a valuable resource and save a lot of debugging effort down the line.
+
+\textbf{Use Code Quality Tools}
+Quality code is a major factor in keeping code reproducible and should be ensured as early as possible, as it lowers the probability of surprises, bugs, and costly refactoring later on. 
+Moreover, quality code will improve the readability and extensibility, which will allow other researchers to build upon your code and foster collaborations.
+Some aspects of code quality can be checked automatically using:
+\begin{itemize}
+    \item Formatters (e.g., black~\citep{black})
+    \item Linters (e.g., ruff~\citep{ruff})
+    \item Type checkers (e.g., mypy~\citep{mypy})
+    \item Tools for checking compliance with docstring conventions (e.g., pydocstyle~\citep{pydocstyle})
+    \item Links to external websites in the documentation
+\end{itemize}
+Pre-commit~\citep{precommit} loops can run all of these checks on each commit, and thus include them in the project early on. 
+Furthermore, unit testing is useful for ensuring code functionality and is therefore recommended for most projects.
+Continuous integration / continuous deployment (CI / CD) tools such as Github Actions, CircleCI, and Jenkins can also help to automate the building, testing, and detecting resulting errors after each commit.
+We recommend setting up a combination of these tools before writing any code to ensure high code quality standards.
+Furthermore, it is worth remembering that scripts to run experiments, gather data, and produce plots are also code and demand the same scrutiny.
+AI-based coding tools can help to produce cleaner code as well. 
+There are a plethora of different options, from directly interacting with an LLM chatbot interface to IDE integrations such as GitHub Copilot for VSCode~\citep{copilot} and even IDEs fully focused on AI assistance like Cursor~\citep{cursor}.
+Integrated solutions are generally using specialized code models and offer greater usability. 
+All AI tools should be seen as a complement to the code quality tools above and be used with an awareness that they can produce clean-looking, executable yet wrong code.
+Their output should always be checked before deploying it in a project.
+
+\textbf{Maintain Documentation}
+A big factor in reproducing results will be understanding how this can be done in the first place.
+Therefore, proper documentation is essential and should be planned from the start.
+Documentation does not only or necessarily refer to a website with an API reference but also includes docstrings, high-quality README documents, and clear instructions for installation and experiment execution.
+At the very least, an executable with a thorough README on how to install and use it should be available. 
+When using compiled languages, it is crucial to generate build tool files like \texttt{make}/\texttt{cmake} and ``autoconfig'' files to explain conditional compilation. 
+A clear and comprehensive README in combination with tool files, installation commands, code structure documentation, docstrings in all methods, and details on how to execute experiments will enable others to reproduce your code later on.
+
+\subsection{Manage Experiments}
+%Track everything, resource requirements upfront, standardized data formats
+Beyond other people interacting with your experiment code, there is also the aspect of using the code to execute experiments in the most efficient way, avoiding excessive re-runs and using only the compute resources required.
+
+\textbf{Start with a Small Prototype Experiment}
+Starting small is often the key to building successful experiments.
+Before diving deep into extensive experimental designs, it is recommended to begin with a small prototype experiment. 
+Surrogate benchmarks (cf.\ \Cref{sec:benchmarks}) or recorded experimental data, if available, can be invaluable at this stage. 
+In cases where such data are not at hand, generating dummy data can serve as an equally effective placeholder. 
+This could be as simple as trimming down larger datasets or manually designing small data samples. 
+The core aim is not necessarily the precision of the data, but its ability to facilitate swift trial runs that can quickly detect bugs in the pipeline. 
+This preliminary stage is crucial to testing the evaluation pipeline holistically. 
+This ensures that aspects such as logging, plotting, and resource tracking work efficiently and in tandem. 
+As an added advantage, publishing these prototype experiments, in addition to the full set-up, can act as a testament to the replicability of one's research. 
+It offers peers a chance to ensure that it seamlessly integrates with their set-ups.
+This type of information gathering aligns with the principles of hypothesis-driven research, often providing valuable insights into the assumptions made to form the research questions. 
+Depending on the outcome, it can guide the research process backward, prompting a revisit to previous sections, or equipping it with data, laying the groundwork for expansive experiments.
+In other words, you should use this stage to verify and validate the design decisions you made before and, if necessary, change the design decisions as needed.
+This is also a good opportunity to have one of your co-authors repeat the prototype experiments to ensure your results are repeatable and thus your software setup ready for more extensive experiments.
+
+\textbf{Perform Regular Backups}
+A simple but often overlooked step is to establish a backup strategy.
+As soon as you have collected all your results for the first time, start a backup or, better yet, integrate this into your experiment design. 
+This is especially important when working on local clusters, which might not guarantee the availability or persistence of workspaces. 
+
+\textbf{Estimate Resource Requirements}
+Understanding and accurately gauging the resource requirements, in particular the runtime requirements, of your experiments is another crucial aspect of experimental design.
+Having spent the time to design a small-scale scenario can prove instrumental here.
+Analyzing the requirements on a smaller scale is often enough to fairly accurately extrapolate the requirements for full-scale experiments.
+In doing so, we should always weigh the potential benefits of running particular experiments against the costs involved.
+To gain a better understanding of the overall cost, you should consider various aspects that are affected by the runtime.
+For example, you can translate the runtime required for an experiment into CO\textsubscript{2} emissions, energy consumption, monetary costs of running the experiment in a commercial cloud, or allocated CPU / GPU time on a shared local cluster.
+
+\textbf{Optimize Resource Usage}
+Although at first glance it might seem that you have little control over these factors, almost all the design decisions that you face will have some influence on the overall runtime and cost of your experiments.
+%Some of these decisions have a wider impact, while others have more nuanced influence.
+Take, for example, automated algorithm configuration as a potential application.
+Although the overall optimization budget obviously impacts how much resources you use, a more nuanced choice can be made when deciding \emph{how} resources are utilized.
+Techniques such as adaptive capping \citep{hutter-jair09a} or multi-fidelity optimization \citep{li-jmlr18a,klein-aistats17a} can be used to quickly discard underperforming solution candidates and thereby avoid wasting resources \citep{eggensperger-jair19a,karapetyan2019,desouza2022}.
+This highlights that efficient experimental design should not only consider the overall budget, but also ensure that the available budget that is being spent is used as efficiently as possible.
+Having gained a good understanding of the important design decisions, how to verify and test them at a smaller scale, and a solid understanding of the involved resource requirements, we can finally start running our full-scale experiments on the desired benchmark.
+
+\subsection{Adapt Experiments to Clusters}
+%Similar to what we have already done.
+Full-scale experimentation in meta-algorithmic fields is often done on research clusters. Since these are communal tools with their own load management systems, there are additional considerations for best utilizing them.
+
+\textbf{Use Resources Mindfully}
+%Include time and computational cost tracking in your code from the beginning. This will ensure that such metrics are available for all experiments included in the publications and will allow for honest reporting. Implement this tracking both within your code, to track different components individually, and externally through the HPC UI, to optimize resource utilization.
+Request only the resources necessary for a given job.
+In most HPC scheduling systems, this will improve your position in the queue and it will also ensure others can use free resources. 
+Jobs can also be optimized for cluster scheduling: Small experiments will probably run fast and are, therefore, scheduled early, but too small experiments usually have negative effects on the scheduling due to the sheer number of jobs submitted. Therefore, it might be a good idea to combine multiple small experiments in a single job. 
+This is also dependent on the specific HPC: If there are only huge nodes available, combine as many experiments to fully use each node.
+Checkpointing should be done as often as possible when working on an HPC, since even when nothing is wrong in the code, cluster nodes can sometimes fail. For iterative algorithms, it should be possible to save the algorithm state after each iteration. 
+
+\textbf{Monitor Jobs}
+Enable live monitoring of your experiments. Although the experiment might be designed with much care, issues may arise when running experiments on the clusters. It helps a lot to monitor the progress of experiment executions in an appropriate manner to interrupt the execution early when there is a systematic problem. Here again, it also helps to log everything that might be considered useful.
+%When running experiments on a cluster or in the cloud, consider monitoring the efficiency of your experiments to decrease the number of allocated resources if your experiments do not need them. 
+%Thus, saving money or, respectively, enabling other researchers to use the resources that you previously allocated but did not require (see also the points below: resource tracking / resource allocation). 
+
+\subsection{Examples \& Pitfalls}
+
+\textbf{{\color{ForestGreen} Example:} Informed Open Source Strategy}
+We are working on a benchmarking project that compares several optimization algorithms across benchmarks.
+Since we want to make it easy to reproduce these results but work with benchmarks that have conflicting requirements, we choose to create multiple containers which we publish together with our code.
+The resulting data can be quite interesting for the community, so we will process our results as well as the resource consumption of each run into .csv files and share them on a code platform like huggingface.
+We believe we do not necessarily need to document the established algorithms and benchmarks we use, but focus our efforts on creating clear and simple instructions for running our code through a structured README file, commented runscripts and a documentation page that outlines how algorithms and benchmarks interact.
+
+\textbf{{\color{ForestGreen} Example:} Improving Code Quality Between Projects}
+We want to extend one of our previous projects on evolutionary algorithms where we have not thought as much about our code quality.
+Thus we first write test cases for our extension to guarantee we will not accidentally change the original code's functionality.
+We also run a few small experiments on an inexpensive problem in order to compare results later.
+Then we refactor our code structure, using automated tools to aid in formatting and proper documentation.
+After we verify that the tests and experiments still work on the new code base, we use pre-commit loops and GitHub actions to make sure our standards remain high as we extend our method.
+
+\textbf{{\color{ForestGreen} Example:} Proactive Resource Management}
+When investigating a new NAS method, we start working on surrogate benchmarks and then a dummy search space of very small models before moving on to our actual problem setting.
+We can use the surrogate benchmarks to test the resource requirements induced by our method and its design decisions.
+The dummy search space helps us verify these insights by adding real function evaluations, albeit at a small scale.
+With these insights, we have a fairly good idea of what resources to request once we scale to our HPC, improving the rate at which our jobs are scheduled.
+If we need to alter design decisions in our experiments, we can immediately adjust the resource requirements and thus our project timeline.
+
+\textbf{{\color{OrangeRed} Pitfall:} Code as a Last Priority}
+It is sometimes tempting to draft experimental code first and and resolve to clean it at some point during the project. 
+Not only will this require considerably more effort than to fix inconsistencies immediately, reworking code that has already been used for experiments can potentially lead to functional changes that can make it necessary to rerun everything.
+Taking the time to first set up a structure for good research code is likely to be significantly simpler: making explicit choices for installation, setting up a makefile that can take care of automatic formatting and linting and creating a documentation draft that can be filled step by step are simple steps that do not take a lot of time once you know how, but they offer a much-improved workflow when it comes to research code.
+
+\textbf{{\color{OrangeRed} Pitfall:} Insufficient Installation Testing}
+Especially when using requirement specifications or virtual environments for installation, testing if installation from scratch leads to runable code on commonly used systems is essential. 
+Locally we often do not install all requirements at the same time, potentially leading to conflicting dependencies package managers cannot resolve. 
+Furthermore packages can be limited to specific operating systems and their versions, so it is advisable to test installation on a common Unix system like, e.g., Ubuntu that is used in many HPCs. 
+This is crucial when writing software on operating systems that are not as widely used in research, e.g., Windows. 
+
+\textbf{{\color{OrangeRed} Pitfall:} No Data Management Plan}
+It is easy to get lost in experimental data, especially when we log many things.
+This can lead to confusion about which experiments have already been executed, where which metrics are recorded and which data should be published in what way.
+Doing this post-hoc can be a lot of work and you may discover that you ran an especially costly experiment three times by accident. 
+Therefore it is helpful to have a plan upfront on how to handle code, datasets, result data and other artifacts. 
+This way you can already set up open-sourcing pipelines at the start of a project and you will be sure of where to find data, how to publish it and what to back up.
+
+\textbf{{\color{OrangeRed} Pitfall:} Going Big Immediately}
+Deploying the first software prototypes immediately on large-scale experiments on an HPC is generally not a good strategy. 
+Having to wait on resources only to discover additional errors in the code is frustrating and wasteful of both time and resources.
+Gradually moving from smaller experiments to more costly ones ensures that the code is thoroughly tested once more compute resources are required, thus reducing the amount of bug hunting waste. Ideally, the local setup is as close as possible to the HPC setup as possible (with only the configuration of the job submission being different). Also, many HPC systems provide a test queue that can be used to test the cluster setup.
+
+\textbf{{\color{OrangeRed} Pitfall:} Only Partial Artifact Release}
+Releasing parts of your experimental setup (like partial code or only the resulting model weights) on their own is not equivalent with releasing the full project.
+As we discussed, technical details related to versioning or pre-processing can make a big difference for the end result. And to put a result into context, we need to see the full pipeline of how it was created. 
+Therefore all code related to the experimental setup, including installation, data loading, runscripts, model code and plotting scripts should be released.
+
+\section{Interpreting Results} \label{sec:interpreting}
+
+After running all experiments, the collected raw data need to be analyzed to extract information about the performance of different approaches, leading to insights about which work best in which scenario.
+Here, we consider the following core topics: performance metrics (and where to pay attention when accumulating them), post-hoc analysis, and pitfalls and best practices for results visualization.
+
+\textbf{TL;DR:}
+When interpreting results, keep in mind the type of performance metric (solution quality, time, or robustness), and consciously select how to aggregate the results for presentation (per dataset, ranked for all, etc.).
+Statistical tests can help quantify the evidence for research hypotheses, however, always report $p$-values and do not fixate on ``statistical significance'' as the only desired outcome.
+Finally, design graphical representations that display the data fairly, including performance over time and variation between repetitions, and that are accessible to everyone and in grayscale printing.
+
+
+\subsection{Performing Post-Hoc Analysis} \label{sec:post-hoc}
+
+After gathering the experimental data, there is a variety of post-hoc analysis you will likely perform.
+We focus here on the main considerations when performing statistical tests.
+
+% \textbf{Statistical Testing}
+% Can either be here or at the start
+
+% Hypothesis testing is one of the main tools with which the effectiveness of a given method can be quantified.\niko{This is an odd/misleading wording: hypothesis testing does not quantify effectiveness of a method. Hypothesis testing quantifies by how much we should change (reduce) our conviction that $H_0$ is true, due to the tested data.}
+Hypothesis testing quantifies evidence on whether a null hypothesis -- e.g., along the lines of \textit{``new method does not improve performance''} -- can be rejected based on the collected data.
+The output of the hypothesis test is a so-called $p$-value, the probability that the observed data (or more extreme data) was produced assuming that the null hypothesis holds true.
+A lower $p$-value indicates stronger evidence against the null hypothesis.
+The right hypothesis test for a given experimental setup can distinguish performance measurements and algorithm rankings that are robust from those due to random fluctuations.
+Statistical tests are typically used in confirmatory research, and its usage in exploratory or method-developing research has been dubbed supposedly confirmatory \cite{herrmann-icml24}.
+
+Statistical tests should always be \emph{defined together with the experimental setup} and not after the results have already been analyzed to get unbiased results and steer clear from the multiple testing problem.
+For example, applying a test on subsets of the data after statistical significance was not achieved on the full dataset can easily lead to ``false-positive'' statistical tests: when applying a test with a significance level of $5\%$ on $20$ subsets of data, you would expect one ``significant'' result simply due to random chance.
+
+Note that we use the term ``statistically significant'' very carefully here and want to caution against its (over)use: Community standards for what is considered sufficient statistical evidence evolve with time, and overly focusing on delivering ``statistically significant'' results to some fixed significance level contributes adverse incentives to the experimental and publication process.
+Rather, we recommend publishing the achieved $p$-values precisely, and interpret the weight of the evidence in a separate discussion.
+For further discussion, we refer to \cite{cockburn2020threats,wasserstein2019moving}.
+
+% \niko{The view on "statistical significance" has changed significantly in the last decade-or-so in that there seems to be a consensus (by statisticians) that the term and conception should be entirely abandoned, and so should be significance thresholds. This is not to say that we cannot or should not compute and report $p$-values. We can and should. I personally agree with this view 100\% too. For more information consider the references on \href{http://www.cmap.polytechnique.fr/~nikolaus.hansen/rome-2023-key-www.pdf\#page=35}{page 35 slide 56 here}.}
+
+To decide which statistical tests to use, consider using software such as the Python package \texttt{autorank} \citep{Herbold2020}, which automatically performs several checks on the dataset to decide which tests should be used.
+When using such software, make sure to export the report on the statistical tests performed and which tests have actually been applied by it.
+For another overview of statistical tests in benchmarking optimization heuristics, see Section 6.3 of \cite{TBB20benchmarking}.
+
+% Open issues
+
+% \begin{itemize}
+%     % \item When, how and which statistical test to use?
+%     \item Something similar to Figure 3 from \cite{TBB20benchmarking} would be helpful. \ls{For which kinds of tests would we like to have overviews like this? Is it okay to ref. somewhere else instead, should we copy/reference a figure from somewhere else?}
+%     \item Frequentist vs.\ Bayesian tests. \ls{What should we explain here?}
+%     \item \ls{Should we give a fuller introduction to statistical tests? What is a good general reference on statistics / statistical testing?}
+% \end{itemize}
+
+% \textbf{Interpretability}
+
+% \todo{We mention it upfront, not sure if this is best here, though}
+
+\subsection{Performance Metrics}
+
+Here, we discuss the basic properties of performance metrics and some characteristics to keep in mind when accumulating them in common benchmarking scenarios.
+
+\textbf{Differentiate Analysis Scenarios}
+During the analysis, multiple factors need to be taken into account to derive meaningful results.
+
+Firstly, the problem settings should be differentiated when possible.
+For instance, avoid aggregating over easily distinguishable problem properties: e.g., in COCO aggregation over the search space dimensionality of optimization problems is avoided, as it is known before choosing an optimizer \citep{COCOjournal}.
+In ML, it is advisable to differentiate the analysis by type of task (e.g., binary vs.\ multi-class vs.\ regression) and use a consistent metric for each scenario, that is, to not aggregate over different metrics.
+In some cases, it can be informative to normalize the performance measure values, e.g., relative to a simple baseline, to have a better balance between easy and hard problem instances.
+Finally, ensure that all algorithms within one analysis have followed an identical evaluation protocol.
+This includes not only training time invested in the final run, but also effort spent for configuration and parameter tuning beforehand.
+
+\textbf{Aggregate Performance Metrics Mindfully}
+When presenting results, it is important not to focus on only one aggregated performance value.
+Rather, it is more valuable to provide different descriptive statistics (mean, median, minimum, maximum, first/third quartile, standard deviation, \dots) of the performance instead.
+On the one hand, consider performance variation between individual runs (with different random seeds) to evaluate the robustness of an individual method.
+On the other hand, variation in algorithm rankings between different datasets/domains should be investigated.
+See also, e.g., Chapter 7 of \cite{bartzbeielstein2006}.
+Visualizations of the results, for example, in the form of boxplots, violinplots, or simple scatterplots, can greatly improve the expressiveness of the results and the perception by the readers (cf.~Section~\ref{sec:plotting}).
+
+Additionally, it is often more informative to present convergence results, i.e., the performance results after different periods of time during the training and optimization process, rather than the results during a single cut-off point.
+While this may not always be possible due to additional overhead in the experimental setup, it enables deeper insights into the behavior of compared algorithms over time and with different budgets.
+Graphical visualizations of the convergence, such as the runtime profiles used in BBOB \citep{COCOjournal}, are a good fit to convey these kinds of results.
+
+Generally, with many meta-algorithmic problems, we are dealing with the comparison of multiple algorithms on multiple domains. We can take one of two approaches to compare the performance of algorithms: either we compare the performance across algorithms for each test case (e.g., dataset) individually, or we can perform an analysis on the average ranking of each algorithm across the datasets.
+
+\begin{itemize}
+
+\item \emph{Approach 1: Compare performance on each domain separately}
+% Comparing the performance of algorithms on each dataset separately.
+When comparing $m$ algorithms on $n$ domains, these results can, for instance, be represented in an $n \times m$ table.
+A standard t-test can be used to compare the performance of all algorithms for each domain (each line of the table) after verifying that the results follow a normal distribution (using tests such as the Anderson-Darling test).
+% \pieter{the Kolmogorov–Smirnov test and the Shapiro–Wilk test are used more commonly in my experience, though in general the latter is recommended due to the former's lower power. Additionally, I typically recommend students to also evaluate the normality visually e.g., through a Q-Q plot.}
+In the more frequent scenario that runtimes are not distributed normally \citep{dewancker2016strategy}, non-parametric tests (e.g., Wilcoxon rank sum) must be used.
+% \pieter{Based on the central limit theorem (distribution of means of all samples approaches a normal distribution, regardless of the population distribution), you can actually use a parametric test anyway, so long as your sample size is at least say 30. Also, in case you want to compare more than two algorithms, you should use a repeated measurements ANOVA with post hoc tests instead, though I have admittedly used several paired sample t-tests myself in such a case as well (but this can lead to more type I errors). Not sure whether you want to go into this much detail, but feel free to let me know if you want me to write this down in depth. But note that I'm not a statistician ;). Finally, \cite{bartzbeielstein2006} offers a good introduction to experimental research, albeit in an evolutionary computation context.}
+For each domain, it is enough to compare the results of the most competitive algorithm with the next best one.
+Presenting results using this approach might not give a concrete idea of the competitive performance of each algorithm as it is rare that one algorithm always beats other baselines on all datasets.
+% \pieter{Not sure if this helps, but in my research field (Operations Research), we typically/often propose a new algorithm (or model) ourselves, which we then compare (in a pairwise manner) with the best $X$ algorithms from the literature, without comparing these existing algorithms among themselves. Though if, from a statistical point of view, you are interested in all differences between the algorithms, you should also test all pairs. That being said, depending on the performance metric used, it can sometimes be obvious that an average difference will be statistically significant by looking at the size of the difference (and the standard deviation) alone, which then typically leads to a very low p-value. And finally, this also depends on your hypotheses. E.g., if you want to know what the performance differences are for $X$ algorithms on optimization problem $A$, you will/should test each pair of algorithms (repeated measurements ANOVA with post hoc tests). (And you may also want to look into differences in performance based on instance features, but I digress.)}
+
+% \matthias{Don't we know that the result of an optimization run does not result in a normal distribution as for example shown in Section 2.1.2 of \url{https://proceedings.mlr.press/v64/dewancker_strategy_2016.pdf} ? }
+
+\item \emph{Approach 2: Compare performance rankings across domains}
+When comparing the performance of multiple algorithms across multiple domains, the results are often not commensurable across the domains. In such cases, performing a non-parametric test (i.e., ranking test) can give a better idea of relative performance and can allow presenting results in a more compact way than individual performance reports. % \matthias{Are there any other papers showing this, too?}
+A test like the Friedman test can allow comparing average ranks of algorithms on all domains. % \pieter{But you will lose power compared to a parametric test. Also, you lose information regarding the size of the average difference, at least if this is something that matters in your research.}
+Creating a critical difference (CD) diagram after a post-hoc test allows us to visually and compactly compare the ranking of multiple algorithms on multiple datasets and assess if the differences in rankings are significant.
+A point to consider here is that to statistically compare rankings and evaluate the significance of the results, a relatively large number of runs are needed.
+In scenarios where it is impossible to afford multiple runs (e.g., where runs are computationally expensive), comparing the ranks without assessing their statistical significance is still possible. % \pieter{I don't follow here, if you have the ranks for each instance and for each algorithm, running statistical tests shouldn't take very long. Or do you mean that you may not have results for each instance-algorithm combination?}
+While this is not ideal, it is reasonable if there are few runs of models across many domains. 
+\end{itemize}
+
+\subsection{Visualizing Results} \label{sec:plotting}
+
+Insightful results visualizations make your results easier to understand. The right data visualization can convey a high density of information in a much more accessible way than a table containing the same data.
+
+\textbf{Choose the Right Chart Type}
+% Pay particular attention to the choice of chart you would like to include.
+A lot of design decisions go into creating comprehensive, clear and honest graphs, starting with the chart type.
+Depending on the data, visualization libraries offer a lot of different choices of how to present them.
+While there may be a set of available chart types that could be used to convey the right information, there are some general rules that you should follow when selecting a chart type.
+
+Firstly, three-dimensional chart representations can often be misleading, as in almost all cases the graphics are presented in two-dimensional media, such as on screen or paper.
+The necessary projection easily warps the perspective and the data is not presented accurately anymore.
+Placing multiple graphics or traces behind each other in 3D, or adding 3D effects to any kind of chart that conveys the same information in 2D, should always be avoided.
+
+Always keep in mind how the data will be used and analyzed by the readers of your research output.
+Some kinds of charts are harder to read than others.
+For example, pie charts do not allow us to easily read and compare the proportions of each slice.
+The same information can in all likelihood be presented in a more readable way in a (stacked) bar chart, as bar lengths are easier to read and intuitively compare than the area/angle of circular sectors.
+See Figure~\ref{fig:chart-comparison} for an example.
+
+% Be wary of all types that may mislead through pseudo-perspective, i.e., 3D and pie charts - we often cannot read angles well.
+To better select the type of chart, it is worth looking at the hierarchy of reading characteristics by \citet{datavis}. 
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=.49\textwidth]{figures/barchart.pdf}
+    \includegraphics[width=.49\textwidth]{figures/piechart.pdf}
+    \caption{Schematic comparison of a simple barchart vs.\ piechart. Barcharts allow to easily see which approach performs best and quantify performance differences, whereas the piechart is harder to read.
+    Additionally, the piechart requires the use of another aesthetic (here: color fill) to distinguish groups.
+    This would allow the barchart to include further information or (here) be presented in a more minimalist fashion focusing on the data.}
+    \label{fig:chart-comparison}
+\end{figure}
+
+\textbf{Use Accessible Color Palettes}
+When using colors in your charts, pay attention to the ease of identification by people facing color vision deficiencies and use color maps that do not distort color perception \citep{crameri2020misuse}.
+Popular and widely available colorblind-friendly palettes are \texttt{viridis} and \texttt{inferno}, among others.
+If you want to use ``rainbow'' colors for a wider range of hues, instead of traditional color maps such as \texttt{jet}, consider using a modern variant such as \texttt{turbo} which is accessible to all variants of colorblindness except achromatopsia and, correspondingly, grayscale printing \citep{mikhailov2019}.
+Fig.~\ref{fig:color-palettes} illustrates some of these effects.
+
+If you are uncertain, you can use one of various free (online) tools that are available to simulate common colorblindness conditions\footnote{e.g., \url{https://www.color-blindness.com/coblis-color-blindness-simulator/}}.
+However, an easy check for color accessibility is to verify that visualizations remain readable when exported or printed in grayscale.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=.49\textwidth]{figures/jet.pdf}
+    \includegraphics[width=.49\textwidth]{figures/jet-bw.pdf}
+    \includegraphics[width=.49\textwidth]{figures/turbo.pdf}
+    \includegraphics[width=.49\textwidth]{figures/turbo-bw.pdf}
+    \includegraphics[width=.49\textwidth]{figures/viridis.pdf}
+    \includegraphics[width=.49\textwidth]{figures/viridis-bw.pdf}
+    \caption{\texttt{jet}, \texttt{turbo} and \texttt{viridis} color scales (top-to-bottom) in color (left) and graytone (right). Of the two rainbow color palettes, \texttt{jet} introduces visual artifacts in forms of brightness jumps, while \texttt{turbo}'s transition between colors is smooth. In contrast to both, \texttt{viridis} is perceptually linear, i.e., brighter colors always correspond to higher values.}
+    \label{fig:color-palettes}
+\end{figure}
+
+\textbf{Plot Distributions Instead of Aggregates}
+Another contribution a good graphical presentation of results can give, is a closer view into distribution characteristics or uncertainties which go beyond basic summary statistics.
+
+Rather than reporting only one averaged metric (such as mean accuracy), boxplots and violion plots can give much better insight into spread and distribution of the underlying individual values.
+They can, for example, highlight outliers or distribution characteristics such as multiple modes, skew or variance at a glance.
+When comparing across problems, the results per domain should be made comparable by normalization with common reference points (baselines) across domains.
+A sensible grouping of the problems also becomes important here: aggregation across easily distinguished characteristics (e.g., classification vs.\ regression, different performance measures, or the dimensionality of an optimization problem) should be avoided and the results should (also) be presented individually per group.
+If it would overwhelm the plot to show detailed distributions (e.g., in timeseries, see below), including additional summary statistics such as 5\% and 95\% quantiles or standard errors can still give insights on important distributional characteristics in a readable way. An example is shown in Figure~\ref{fig:distributional}.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=.49\textwidth]{figures/boxplot.pdf}
+    \includegraphics[width=.49\textwidth]{figures/barchart.pdf}
+    \caption{Schematic comparison of plotting distributed vs.\ aggregated data using a boxplot of individual run data and a barchart of aggregated mean values.
+    The boxplot visualization allows us to see that while method A performs better in the median, method B is competitive in some cases as well, while they are both clearly better than methods C and D.}
+    \label{fig:distributional}
+\end{figure}
+
+% To show the distribution of results of one continuous variable or continuous variable divided by category/class.
+
+% Consider also using Violin plots instead as they show more information.
+% Alternatively, consider adding a stripplot over a boxplot/violin plot to show individual data points. 
+% Remember that boxplots will only sometimes give a good representation.
+% Violin charts or histograms may also be helpful.
+
+% \ls{What about standard errors? 5\%, 95\% quantiles, etc.?}
+
+% How to plot uncertainties
+
+% \begin{itemize}
+    % \item Should we report the full range of results or truncate outliers? Both? \kaitlin{all data/results should be reported, including outliers: the fact that such outliers are possible from a given setup should be discussed when analyzing those results.}
+    % \item \matthias{We can even report both mean and median for better understanding the algorithm's performance: \url{http://proceedings.mlr.press/v48/metzen16.pdf}}
+% \end{itemize}
+
+\textbf{Show Performance Over Time}
+Finally, performance data should always be reported at multiple points of computation time or other resource usage, ideally in form of convergence plots.
+For example, the COCO platform reports the number of problems solved over time (here: number of function evaluations), giving insights into convergence characteristics.
+This also allows others to analyze the trajectories and, e.g., pick an algorithm that has the best results after 1 hour of computation time if that is all you can afford, rather than results after 7 days.
+A schematic illustration is given in Figure~\ref{fig:convergence}.
+
+Ideally, performance distributions and performance over time can be shown together in a single graphic.
+For example, standard errors or quantile information can be plotted along with median performance by additional lines or color bands.
+However, be careful to not introduce unnecessary visual clutter, which can make it hard to make any sense of your visualizations.
+Weigh the benefits of including a more accurate representation of the variability of the data vs.\ the readability of your graphic.
+
+\textbf{Avoid Fully AI-Generated Plots} AI tools have become a popular option to improve presentation in papers. 
+They can be helpful with making suggestions such as a suitable color palette, but we caution against workflows that directly input performance data into a model to obtain to corresponding plots.
+This is not generally a reproducible process, even with the same model, making it a poor choice.
+Furthermore, the way data is aggregated and presented is intimately tied to the research question and the interpretation of the data. 
+Therefore, good scientific visualizations, particularly of performance plots, are not easily automated.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=.49\textwidth]{figures/convergence.pdf}
+    \includegraphics[width=.49\textwidth]{figures/barchart.pdf}
+    \caption{Schematic comparison of aggregated performance over time vs.\ a fixed point in time.
+    The convergence plot shows that, depending on the time allowed, different approaches perform best regarding their average performance.
+    For example, Method B outperforms Method A for time budgets in the range of 100-300, while Method A outperforms B after the full time scale of this (hypothetical) experiment.}
+    \label{fig:convergence}
+\end{figure}
+
+\subsection{Examples \& Pitfalls}
+
+\textbf{{\color{ForestGreen} Example:} Convergence Profiles}
+After benchmarking your new hyperparameter optimizer HPO-X, you plot the solution quality of your approach against the running time.
+You separately consider different scenarios (numerical, categorical and mixed spaces), and compare against multiple random search baselines (1x, 2x, 5x, and 10x) and the state-of-the-art approach.
+You discuss the (relative) performance of HPO-X based on the convergence profiles, keeping the different scenarios and running times in mind.
+
+\textbf{{\color{ForestGreen} Example:} Statistical Testing}
+You decided on a statistical testing protocol beforehand and consider the results of your tests.
+In all cases, you report the $p$-values of the tests, and visualize the average ranking and variance of the different methods using critical difference diagrams.
+HPO-X may not ``win'' every comparison, but the tests give you a good basis to discuss its strengths and weaknesses.
+
+\textbf{{\color{OrangeRed} Pitfall:} Out of Control Post-hoc Testing}
+After running your experiments, you don't always get the results that you wanted.
+Maybe your algorithm did not perform as well as you wished, or the baselines and comparison algorithms are just too good.
+Do not try to ``salvage'' the results now by considering an arbitrarily shortened running time, reduced data set or by leaving out state-of-the-art optimizers: Any ``statistically significant'' results received this way are in all likelihood invalidated by the multiple testing.
+
+\textbf{{\color{OrangeRed} Pitfall:} One Huge Results Table}
+There is little less disappointing than reading a paper that has a promising and innovative methodology, transparent and reproducible experimental setup, but chooses to present its results exclusively in tabular form across multiple consecutive pages.
+Even with proper statistical tests included, and when highlighting the best algorithm per data set, a few summarizing plots are much better suited to convey the results.
+If there is no space for both, consider keeping the figures and publishing the full results table in the appendix or online along your experimental code.
+
+\textbf{{\color{OrangeRed} Pitfall:} Blindness to Color Blindness}
+When selecting color palettes, do not just focus on how appealing certain colors are to you.
+Always check accessibility with respect to color blindness, e.g., by checking a grayscale printout, so that other researchers in your community can always interpret your results and figures correctly.
+
+% \textbf{{\color{ForestGreen} Example:} Extending an existing black-box optimizer for HPO}
+% We planned to use test X from the start and therefore have a reliable statement on the validity of our results.
+% Apart from that, we also look at the budget correlations and hyperparameter importances as an additional insight into the changed behavior of our extension compared to the baseline.
+% In all our plots we prioritize readability and include uncertainty measures for all results.
+
+% \textbf{{\color{OrangeRed} Pitfall:} Proposing a new method for neural architecture search}
+% We simply make a table with all results and highlight some of the most impressive numbers.
+% Since we do not have a lot of space left after that, we just shrink the plots.
+% Since the paper could use some more math, we also pick some statistical test after the fact and see if the outcome is good enough to be included in the paper.
+
+\matthias{I am wondering if we should add an "open questions" section in which we highligh open research questions with respect to empirical research, for example, how to deal with training set contamination when evaluating LLM-based meta-heuristics. I believe there are a bunch more examples that we could come up with?}
+
+\section{Open Questions}
+Research methodology is not fixed, but continuously evolving. As a result, there are elements of meta-algorithmic research practice, we currently cannot formulate best practices for, but believe are important questions in the research community.
+
+\subsection{Data Contamination}
+Foundation models today are trained on vast amounts of data, to the degree that for some models, it must be assumed they are trained on all available data at the time of their creation~\citep{TODO}. 
+This creates a problem in our usual evaluation workflow with train-test-validation data splits since any validation and test data would have to be kept secret or created after training the model. 
+
+This problem is of course much discussed within the NLP community since LLMs are the best example for models trained on huge amounts of data~\citep{}.
+Any area using LLMs in their work, however, faces the same issue. 
+As an example, let us say we want to use an LLM for algorithm selection. If our benchmarks are openly available, we have to assume any LLM will have been trained on these benchmarks and thus have had access to the test and validation data already.
+
+Currently, we do not know how avoid this issue or even how to measure it well. Iterating on benchmarks fast enough to keep pace with LLM training also is not sustainable. Therefore it will be an important research topic to pinpoint the influence of data contamination on meta-algorithmic experiments and also to find solutions, e.g. through ideas like unlearning.
+
+\section{Conclusion}
+We hope that the experience we summarize in this paper can serve as a guide toward efficient and impactful meta-algorithmic research. 
+% We expect specifics of what we present here to age and be replaced by, e.g., better methods for interpretability - the general frame, however, can serve as an entry point to better empirical research for years to come.
+We expect specifics of what we present here to age and be replaced or supplemented by methods yet to be developed.
+The general frame, however, can serve as an entry point to better empirical research for years to come.
+We hope it will be enriched by renewed discussion and work on all parts of the pipeline we presented: from better design of research questions to improved practices for experiment setup and more in-depth analysis techniques.
+We see this collection of recommendations as a starting point for scientific investigation, engineering improvements, and knowledge sharing that has the potential to substantially increase the quality and impact of empirical meta-algorithmic research.
+\newrefcontext[sorting=nyt]
+\printbibliography[title=References]
+\end{document}

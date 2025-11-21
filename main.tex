@@ -541,6 +541,7 @@ The JMLR Machine Learning Open Source Software (MLOSS) track, the Journal of Ope
 
 
 \subsection{Design Research Code}
+\label{sub-sec:code}
 %Being aware of requirements from baselines and benchmarks, considering containers, code quality, documentation, testing
 Research code historically has a reputation for being poorly designed and thus difficult to build upon. 
 While the expectation should likely not be at a level of production-ready solutions, there are principles that can improve the legibility, structure, and longevity of research code.
@@ -975,7 +976,10 @@ Research methodology is not fixed, but continuously evolving. As a result, there
 
 \subsection{Impact of Generative AI on Meta-Algorithmics}
 
-Impact of current trends, e.g., GenAI/AgenticAI? (Though I don't have any further specific questions here than what we already discuss above)
+Generative Models and their applications have become an important pillar in machine learning research as well as important tools in the sciences and everyday life.
+It is not yet entirely clear what this means for the target problems, methods, and workflows in meta-algorithmic research.
+Generative AI not only opens new research directions, but has already introduced changes in the research process, like e.g. code generation (see Section~\ref{sub-sec:code}). 
+So far, the community has only scratched the surface in investigating how these tools can improve research practice and how we can counter their misuse, as can be seen in the ongoing discussions around LLMs in the review process~\citep{thakkar-corr25}.
 
 \subsection{Data Contamination}
 Foundation models today are trained on vast amounts of data, to the degree that for some models, it must be assumed they are trained on all available data at the time of their creation~\citep{magar-acl22,balloccu-eacl24,sainz-conda24}. 
@@ -989,11 +993,21 @@ Currently, we do not know how avoid this issue or even how to measure it well. I
 
 \subsection{Long-Term Relevance of Benchmarks}
 
-How do we ensure that our (synthetic and/or static, i.e., unchanged over multiple years) benchmarks and datasets/problem sets are relevant to practitioners?
+Benchmarking practice is an important part of meta-algorithmic research. 
+The goal is to enable consistent, comprehensive and efficient evaluation of different approaches for a fair comparison.
+Often, this means not working on a specific application directly, but to abstract potential downstream tasks for easy execution, e.g. in the form of synthetic functions or by curating a representative set of tasks.
+Over time, however, goals in a field may change and what were difficult and interesting target problems are now less relevant or even simple by comparison. 
+The question becomes when and how we update benchmarks to stay relevant to the domain they target.
+In some domains, this is already a pressing question for current evaluation protocols~\citep{kohli-dmlr24}.
 
 \subsection{Future-Proof Reproducibility Practices}
 
-Large-scale reproducibility? Can we ensure that previously achieved results remain valid in the future? How do we encourage good reproducibility practices? (In my experience it's still not too common to get really reproducible results...)
+The central goal of this paper is to encourage broader adoption of good research practice for better reproducibility of results and insights.
+It is, however, an open question how we can both spread such practices while continuously improving them. 
+In a diverse field like meta-algorithmic research, different sub-fields have their own versions of the practices described here, sometimes for historical reasons, sometimes because of important differences in their problem settings.
+Therefore, even spreading current best practices from one domain to another can be a significant effort.
+On the other hand, improving how we do research is essential and should be a major goal of the field overall.
+Thus, there is a need for better communication and dissemination of research practice across sub-fields in order to produce better quality research in the long term.
 
 \section{Conclusion}
 We hope that the experience we summarize in this paper can serve as a guide toward efficient and impactful meta-algorithmic research. 

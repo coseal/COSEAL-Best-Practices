@@ -1,6 +1,15 @@
 \documentclass{article}
+\usepackage{arxiv}
 \usepackage{graphicx} % Required for inserting images
 \usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=cyan,
+    filecolor=magenta,      
+    urlcolor=purple,
+    citecolor = blue,
+    pdftitle={Overleaf Example},
+    }
 \usepackage[dvipsnames,table]{xcolor}
 \usepackage{multirow}
 \usepackage{tabularx}
@@ -53,24 +62,9 @@
 \addbibresource{references/local_references.bib}
 \addbibresource{references/proc.bib}
 
-%Comments
-\newcommand{\carola}[1]{\textcolor{red}{Carola: #1}}
-\newcommand{\alex}[1]{\textcolor{ForestGreen}{Alex: #1}}
-\newcommand{\tanja}[1]{\textcolor{blue}{Tanja: #1}}
-\newcommand{\matthias}[1]{\textcolor{purple}{Matthias: #1}}
-\newcommand{\lp}[1]{\textcolor{orange}{L. Purucker: #1}}
-\newcommand{\ls}[1]{\textcolor{CornflowerBlue}{L. Schä.: #1}}
-\newcommand{\lars}[1]{\textcolor{Fuchsia}{Lars: #1}}
-\newcommand{\pieter}[1]{\textcolor{NavyBlue}{Pieter: #1}}
-\newcommand{\kaitlin}[1]{\textcolor{BrickRed}{Kaitlin: #1}}
-\newcommand{\ab}[1]{\textcolor{magenta}{André: #1}}
-\newcommand{\damir}[1]{\textcolor{DarkOrchid}{Damir: #1}}
-\newcommand{\haniye}[1]{\textcolor{cyan}{Haniye: #1}}
-\newcommand{\niko}[1]{\textcolor{brown}{Niko: #1}}
-
 \title{Best Practices For Empirical Meta-Algorithmic Research Guidelines from the COSEAL Research Network}
-\author{Theresa Eimer \and Lennart Schäpermeier \and André Biedenkapp \and Alexander Tornede \and Lars Kotthoff \and Pieter Leyman \and Matthias Feurer \and Katharina Eggensperger \and Kaitlin Maile \and Tanja Tornede \and Anna Kozak \and Ke Xue \and Marcel Wever \and Mitra Baratchi \and Damir Pulatov \and Heike Trautmann \and Haniye Kashgarani \and Marius Lindauer}
-\date{}
+\author{Theresa Eimer$^{1,2}$ \and Lennart Schäpermeier$^3$ \and André Biedenkapp$^4$ \and Alexander Tornede \and Lars Kotthoff$^5$ \and Pieter Leyman$^6$ \and Matthias Feurer$^7$\and Katharina Eggensperger$^7$ \and Kaitlin Maile$^8$ \and Tanja Tornede \and Anna Kozak$^9$ \and Ke Xue$^{10}$ \and Marcel Wever$^{1,2}$ \and Mitra Baratchi$^{11}$ \and Damir Pulatov$^{12}$ \and Heike Trautmann$^{13}$ \and Haniye Kashgarani$^{14}$ \and Marius Lindauer$^{1,2}$}
+\date{\small $^1$Leibniz University Hannover, $^2$L3S Research Center, $^3$University of Münster, $^4$Albert-Ludwigs University Freiburg, $^5$University of St. Andrews, $^6$Ghent University, $^7$Dortmund University, $^8$Google, $^9$Warsaw University of Technology, $^{10}$Nanjing University, $^{11}$Leiden University, $^{12}$University of North Carolina Wilmington, $^{13}$Paderborn University, $^{14}$Purdue University}
 
 \begin{document}
 \maketitle
@@ -83,7 +77,7 @@
     It establishes the current state-of-the-art practices within meta-algorithmic research and serves as a guideline to both new researchers and practitioners in meta-algorithmic fields.
 \end{abstract}
 
-\section{Improving Experimental Design in \texorpdfstring{\\}{} Meta-Algorithmic Research}
+\section{Improving Experimental Design in Meta-Algorithmic Research}
 
 Empirical meta-algorithmic research allows for a large degree of control over the experimental setup due to the computational nature of our experiments. 
 However, this is a double-edged sword for research that is both meaningful and efficient: We encounter a plethora of decisions that \emph{must be made deliberately} every step of the way.
@@ -102,7 +96,7 @@ Specifically, we focus on:
 \begin{enumerate}
     \item Drawing empirically sound conclusions through carefully designed evaluation pipelines.
     %\item Improving the computational efficiency of experimentation in meta-al\-go\-rith\-mic research and thus alleviating the burden on smaller academic labs as well as decreasing the ecological footprint.
-    \item Improving the efficiency of the research workflow to enable more and better scientific insights throughout the field
+    \item Improving efficiency of research workflows to enable more and better scientific insights throughout the field.
     \item Increasing trust in research results through applicability, robustness, fairness, and accountability.
 \end{enumerate}
 
@@ -114,7 +108,7 @@ Lastly, we discuss \emph{interpreting results}, including visualization of resul
 All sections include examples of good research practices, as well as common pitfalls to avoid.
 
 We believe this framework is a useful guide to researchers at any level of experience and can serve as a structured introduction to conducting meta-algorithmic research.
-Nevertheless, our goal is not to provide a rule book or a collection of best practices, since specific practices in each field evolve over time.
+Nevertheless, it is not our goal to provide a rule book or a collection of best practices, since specific practices in each field evolve over time.
 Indeed, the question of how to do computational research is a core part of our research field itself.
 As such, we encourage readers to challenge our recommendations and add their findings to this living document~\footnote{Contributions \& Questions are managed via GitHub: \url{https://github.com/coseal/COSEAL-Best-Practices}}.
 Similarly, we commend thoughtful breaking with the practices we present if they do not serve the purpose of the research at hand, as in the spirit of furthering scientific practice, researchers occasionally ``should forget the textbook and simply ask whether he has achieved these higher purposes''~\citep{lessing-69}.
@@ -133,7 +127,7 @@ Without this background knowledge, even finding interesting research questions c
 Building on a field's established norms, on the other hand, can not only improve a project's outcomes, but also save a lot of research and review effort.
 
 Much research has studied best practices for empirical evaluations and experimental design in and around meta-algorithmics \citep[see, e.g.][]{mockus-bo89a,hooker-or94a,johnson-dimacs02a,mcgeoch-book12a,eggensperger-jair19a,lipton-acm19a}.
-Such best practices can contain a range of recommendations to be aware of: from high-level discussions of research directions (see the conversation around metaphor-based meta-heuristics by \cite{aranha-swarm22}) to general points about the validity of theoretical and empirical results~\citep{hooker-or94a,johnson-dimacs02a,herrmann-icml24} and practical questions of reproducibility and replicability~\citep{mitchell-fat19a,pineau-jmlr21a,bischl-wire23a}, see Table~\ref{tab:best_practices}.
+Such best practices can contain a range of recommendations to be aware of: from high-level discussions of research directions (see the conversation around metaphor-based meta-heuristics by \cite{aranha-swarm22} and supporting benchmarking results by \cite{vermetten2024largescale}) to general points about the validity of theoretical and empirical results~\citep{hooker-or94a,johnson-dimacs02a,herrmann-icml24} and practical questions of reproducibility and replicability~\citep{mitchell-fat19a,pineau-jmlr21a,bischl-wire23a}, see Table~\ref{tab:best_practices}.
 Many domains have their own set of best practices in addition to general recommendations for meta-algorithmic research - some like, e.g., algorithm configuration~\citep{eggensperger-jair19a}, with highly developed standards we can learn from.
 Therefore, we recommend reading up on how a specific community has formulated its best practices and where they might differ from others.
 This should form a strong basis for formulating interesting research questions that move the field forward and validating them empirically.
@@ -242,7 +236,7 @@ Therefore, we recommend including a random baseline in most cases, e.g., random 
 A relevant baseline aids in answering your research questions in detail and is not only there to provide a performance threshold that needs to be beaten.
 Further, a relevant baseline should receive the same treatment as the method being studied.
 If your own method is subject to extensive tuning, be it manual or automated, the baseline should ideally receive the same attention to enable comparisons on equal footing.
-For example, to quantify the benefit of your hyperparameter tuning algorithm in simple terms, it is suggested to compare your method against a random search with 2x, 4x, 10x, etc. resources~\citep{li-jmlr18a}.
+An example of a simple baseline to quantify the benefit of your hyperparameter tuning algorithm in simple terms, is random search with 2x, 4x, 10x, etc. resources~\citep{li-jmlr18a}.
 These methods simulate running random search in parallel, which would be the simplest way to assess whether we can improve over simply running random search on more cores (i.e., the most straightforward ``faster'' optimization algorithm).
 
 \subsection{Select Benchmarks}\label{sec:benchmarks}
@@ -276,7 +270,7 @@ Therefore, there are tradeoffs in choosing more benchmarks in favor of less repe
 See \citet{hutter-amai10a} for an illustration of such tradeoffs in algorithm design.
 
 \paragraph{Re-use Existing Benchmark Libraries}
-For many problem domains, re\-search\-ers have created standardized collections of benchmark problems, for example, ASlib \citep{bischl-aij16a}, BBOB functions \citep{COCOjournal}, HPOBench \citep{eggensperger-neuripsdbt21a}, HPO-B \citep{arango-arxiv21a}, OpenML Benchmarking Suites \citep{bischl-neurips21a}, DACBench \citep{eimer-ijcai21a}) and tools to execute large-scale experiments (e.g., Nevergrad \citep{Nevergrad}, BayesMark \citep{bayesmark}, AutoML benchmark \citep{gijsbers-jmlr24a}, COCO \citep{COCOjournal}, Synetune \citep{salinas2022syne}, IOHprofiler \citep{IOHprofiler} and CARPS \citep{benjamins-arxiv25a}).
+For many problem domains, re\-search\-ers have created standardized collections of benchmark problems, for example, ASlib \citep{bischl-aij16a}, BBOB functions \citep{COCOjournal}, HPOBench \citep{eggensperger-neuripsdbt21a}, HPO-B \citep{pineda-neurips21a}, OpenML Benchmarking Suites \citep{bischl-neurips21a}, DACBench \citep{eimer-ijcai21a}) and tools to execute large-scale experiments (e.g., Nevergrad \citep{Nevergrad}, BayesMark \citep{bayesmark}, AutoML benchmark \citep{gijsbers-jmlr24a}, COCO \citep{COCOjournal}, Synetune \citep{salinas2022syne}, IOHprofiler \citep{IOHprofiler} and CARPS \citep{benjamins-arxiv25a}).
 Therefore, we can stand on the shoulders of giants, reducing the chances of making implementation mistakes.
 Using an established benchmark suite has a multitude of advantages. It relieves the users from selecting test problems and evaluation protocols, including the performance measure(s), number of repetitions, length of runs, etc.
 It also allows us to easily compare results between different research groups that evaluated their approach on the same benchmark.
@@ -294,7 +288,7 @@ For example, when evaluating HPO or AutoML systems, training and evaluating a gi
 
 When confronted with a low-dimensional discrete problem space where it is feasible to enumerate the search space, \textit{tabular} benchmarks can be a great starting point.
 Here, all possible configurations are evaluated by the benchmark designers beforehand, and the performance data are published to substitute the evaluation pipeline, e.g., training a neural network.
-Tabular benchmarks are particularly common in small-scale neural architecture search (NAS) \citep{ying2019bench,mehta-iclr22a}, but are naturally limited in the expressiveness of their search space due to the curse of dimensionality.
+Tabular benchmarks are particularly common in small-scale neural architecture search (NAS) \citep{ying2019bench,mehta-iclr22a,pmlr-v188-pfisterer22a}, but are naturally limited in the expressiveness of their search space due to the curse of dimensionality.
 
 In contrast, surrogate benchmarks replace the evaluation of the ``real'' problem by a surrogate function, which approximates the true problem using a simplified model, e.g., learned by regression.
 Thus, they can be viewed as an intermediate step between fully artificial benchmarks (such as BBOB) and real experiments, e.g., of an AutoML system.
@@ -341,7 +335,7 @@ However, they are also the most sensitive to the experimental setup, e.g., maxim
 Finally, a \emph{robustness metric} is concerned with the variance in the outcome of multiple runs.
 
 \paragraph{Handle Problems \& Instances with Care}
-Most benchmarks will contain several problems, often with different instances. The exact handling of these instances may depend on the research question and recommendations by the benchmark, but generally we would expect to measure our metrics on problems and instances left out of the optimization process. 
+Most benchmarks will contain several problems, often with different instances (i.e., slight variations of the same underlying problem to avoid overfitting). The exact handling of these instances may depend on the research question and recommendations by the benchmark, but generally we would expect to measure our metrics on problems and instances left out of the optimization process. 
 This can be done in the form of cross-validation schemes (see e.g. \citet{hutter-aij14a}) or with leave-one-out evaluation.
 We refer to \citet{petelin-gecco25} for an in-depth discussion of leave-one-out evaluation, but recommend a leave-one-problem-out evaluation scheme over leave-one-instance-out options when working across problems as e.g. in algorithm selection. 
 We also recommend testing the final results on separate test instances and problems that were not used for the optimization or validation to ensure a reliable estimate of the true performance.
@@ -403,7 +397,7 @@ Your strategy around model prompting and evaluation should be documented as well
 
 \subsection{Design Reproducible Experiments}
 
-A study can be reproducible on several levels as \cite{bouthillier-icml19a} describe: its code can yield the same outcome everything (Methods Reproducibility), a new implementation of the same method can yield comparable results (Results Reproducibility) and different experimental setups can lead to the same findings (Inferential Reproducibility).
+A study can be reproducible on several levels as \cite{bouthillier-icml19a} describe: its code yield the same outcome every time (Methods Reproducibility), a new implementation of the same method can yield comparable results (Results Reproducibility) and different experimental setups can lead to the same findings (Inferential Reproducibility).
 All three of them are important in experimental design since they validate the implementation, the experimental setting and the conclusions.
 See also \citet{lopez2021reproducibility} for a discussion of reproducibility in evolutionary computation specifically. 
 
@@ -480,7 +474,7 @@ Variance, on the other hand, has meaning relevant to our research question.
 In contrast to noise, we should thus strive to understand variance.
 To do so, we should account for as much variance as we can by varying factors like, e.g., initializations instead of keeping them constant in an attempt to get more consistent results with smaller standard deviations. 
 Accounting for more sources of variance within a comparison, in fact, produces a smaller standard error and more reliable comparisons~\citep{bouthillier-mlsys21a}.
-Therefore, we recommend minimizing noise as much as possible but randomizing sources of variance to the highest degree the computational budget will allow.
+Therefore, we recommend minimizing uncontrolled sources of noise as much as possible while at the same time randomizing controllable sources of variance to the highest degree the computational budget will allow.
 
 % Repeated runs are an essential practice in empirical research as they enhance the reliability and generalizability of the findings.
 % By conducting multiple trials, researchers can account for variations, potential outliers, and unexpected results that could occur due to noise or randomness in the experimental setup. 
@@ -731,7 +725,7 @@ The output of the hypothesis test is a so-called $p$-value, the probability that
 % A lower $p$-value indicates stronger evidence against the null hypothesis.
 A lower $p$-value indicates a higher probability that a statistical test will reject the null hypothesis.
 The right hypothesis test for a given experimental setup can distinguish performance measurements and algorithm rankings that are robust from those due to random fluctuations.
-Statistical tests are typically used in confirmatory research, and its usage in exploratory or method-developing research has been dubbed supposedly confirmatory \cite{herrmann-icml24}.
+Statistical tests are typically used in confirmatory research, and its usage in exploratory or method-developing research has been dubbed "supposedly confirmatory" \citep{herrmann-icml24}.
 
 Statistical tests should always be \emph{defined together with the experimental setup} and not after the results have already been analyzed to get unbiased results and steer clear from the multiple testing problem.
 Applying further statistical tests on already run experiments is also known under the term HARKing (hypothesizing after results known) \citep{kerr1998harking}.
@@ -801,7 +795,7 @@ A standard t-test can be used to compare the performance of all algorithms for e
 % \pieter{the Kolmogorov–Smirnov test and the Shapiro–Wilk test are used more commonly in my experience, though in general the latter is recommended due to the former's lower power. Additionally, I typically recommend students to also evaluate the normality visually e.g., through a Q-Q plot.}
 As performance data is usually not distributed normally \citep{dewancker2016strategy}, non-parametric tests, such as the Wilcoxon rank sum test, must be used in most cases.
 % \pieter{Based on the central limit theorem (distribution of means of all samples approaches a normal distribution, regardless of the population distribution), you can actually use a parametric test anyway, so long as your sample size is at least say 30. Also, in case you want to compare more than two algorithms, you should use a repeated measurements ANOVA with post hoc tests instead, though I have admittedly used several paired sample t-tests myself in such a case as well (but this can lead to more type I errors). Not sure whether you want to go into this much detail, but feel free to let me know if you want me to write this down in depth. But note that I'm not a statistician ;). Finally, \cite{bartzbeielstein2006} offers a good introduction to experimental research, albeit in an evolutionary computation context.}
-For each domain, it is enough to compare the results of the most competitive algorithm with the next best one.
+% For each domain, it is enough to compare the results of the most competitive algorithm with the next best one.
 Presenting results using this approach might not give a concrete idea of the competitive performance of each algorithm as it is rare that one algorithm always beats other baselines on all datasets.
 % \pieter{Not sure if this helps, but in my research field (Operations Research), we typically/often propose a new algorithm (or model) ourselves, which we then compare (in a pairwise manner) with the best $X$ algorithms from the literature, without comparing these existing algorithms among themselves. Though if, from a statistical point of view, you are interested in all differences between the algorithms, you should also test all pairs. That being said, depending on the performance metric used, it can sometimes be obvious that an average difference will be statistically significant by looking at the size of the difference (and the standard deviation) alone, which then typically leads to a very low p-value. And finally, this also depends on your hypotheses. E.g., if you want to know what the performance differences are for $X$ algorithms on optimization problem $A$, you will/should test each pair of algorithms (repeated measurements ANOVA with post hoc tests). (And you may also want to look into differences in performance based on instance features, but I digress.)}
 
